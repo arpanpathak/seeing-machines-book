@@ -112,7 +112,7 @@ fn check_stop_signs(
 
 3. **Distance + speed filter**: Both conditions must be met:
    - \\( Z \leq 50 \text{ m} \\): The stop sign is close enough to be relevant.
-   - \\( v_{\text{ego}} \geq 10 \text{ mph} \\): The vehicle is moving fast enough that stopping requires active braking.
+   - \\( v\_{\text{ego}} \geq 10 \text{ mph} \\): The vehicle is moving fast enough that stopping requires active braking.
 
 ### 13.3.2 The Distance-Speed Tradeoff
 

@@ -208,7 +208,7 @@ Total: ~25 ms, within the 33 ms budget at 30 FPS.
 
 The `AnchorGrid::decode()` method transforms the raw output tensor into bounding boxes. The key insight is that the output tensor is laid out as `[1, 11, 8400]` for our 7-class model, where each of the 8400 anchor points has 11 channels of data:
 
-- Channels 0-3: box coordinates \\( (t_x, t_y, t_w, t_h) \\) (raw logits).
+- Channels 0-3: box coordinates \\( (t\_x, t\_y, t\_w, t\_h) \\) (raw logits).
 - Channels 4-10: class logits.
 
 ```rust

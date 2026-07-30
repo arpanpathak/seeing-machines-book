@@ -8,7 +8,7 @@ This chapter covers the mathematical foundations you need to understand before w
 
 ## 1.1 Pixels as Vectors: The Bridge Between Light and Mathematics
 
-A digital image is, at its core, a rectangular grid of numbers. A grayscale image of width \(W\) and height \(H\) is a matrix \\( I \in \mathbb{R}^{H \times W} \\) where each entry \\( I_{i,j} \\) represents the intensity of light at pixel \((i, j)\), typically in the range \([0, 255]\).
+A digital image is, at its core, a rectangular grid of numbers. A grayscale image of width \(W\) and height \(H\) is a matrix \\( I \in \mathbb{R}^{H \times W} \\) where each entry \\( I\_{i,j} \\) represents the intensity of light at pixel \((i, j)\), typically in the range \([0, 255]\).
 
 But in computer vision, we rarely work with raw pixel grids. We reshape them. We convolve them. We embed them into higher-dimensional spaces. And to do any of this, we must think of images as **vectors** in high-dimensional spaces.
 
@@ -42,7 +42,7 @@ where \\( \mathbf{W} \in \mathbb{R}^{m \times n} \\), \\( \mathbf{x} \in \mathbb
 
 Each row of \\( \mathbf{W} \\) computes a dot product with \\( \mathbf{x} \\):
 
-\\[y_j = \sum_{k=1}^{n} W_{j,k} \cdot x_k + b_j\\]
+\\[y\_j = \sum\_{k=1}^{n} W\_{j,k} \cdot x\_k + b\_j\\]
 
 In a convolutional neural network, the weight matrix is structured  -  it is sparse (most entries are zero) and it has a special Toeplitz-like structure where the same weights are applied to different patches of the input. But the fundamental operation is the same: a weighted sum followed by a bias shift.
 
@@ -66,21 +66,21 @@ The Kalman filter (Chapter 10) revolves around two matrices: the state covarianc
 
 A covariance matrix \\( \mathbf{P} \in \mathbb{R}^{n \times n} \\) for an \(n\)-dimensional state vector \\( \mathbf{x} \\) has entries:
 
-\\[P_{i,j} = \text{Cov}(x_i, x_j) = \mathbb{E}[(x_i - \mu_i)(x_j - \mu_j)]\\]
+\\[P\_{i,j} = \text{Cov}(x\_i, x\_j) = \mathbb{E}[(x\_i - \mu\_i)(x\_j - \mu\_j)]\\]
 
-The diagonal entries \\( P_{i,i} \\) are the variances  -  how uncertain we are about each state variable. The off-diagonal entries capture *correlations* between state variables. If \\( P_{i,j} > 0 \\), then when \\( x_i \\) is high, \\( x_j \\) tends to be high too.
+The diagonal entries \\( P\_{i,i} \\) are the variances  -  how uncertain we are about each state variable. The off-diagonal entries capture *correlations* between state variables. If \\( P\_{i,j} > 0 \\), then when \\( x\_i \\) is high, \\( x\_j \\) tends to be high too.
 
 In the CivicSense Kalman filter (see `src/tracking/deep_sort.rs`), the state vector is 8-dimensional:
 
-\\[\mathbf{x} = [c_x, c_y, w, h, v_x, v_y, v_w, v_h]\\]
+\\[\mathbf{x} = [c\_x, c\_y, w, h, v\_x, v\_y, v\_w, v\_h]\\]
 
 The covariance matrix is \\( 8 \times 8 = 64 \\) entries. Our implementation stores it flattened row-major and, in a simplification, only maintains the diagonal. The update step uses a scalar-gain approximation:
 
-\\[\text{gain}_i = \frac{P_{i,i}}{P_{i,i} + R}\\]
+\\[\text{gain}\_i = \frac{P\_{i,i}}{P\_{i,i} + R}\\]
 
 instead of the full matrix inversion \\( \mathbf{K} = \mathbf{P}\mathbf{H}^T(\mathbf{H}\mathbf{P}\mathbf{H}^T + \mathbf{R})^{-1} \\).
 
-This simplification is justified because the state variables are approximately independent in the measurement space  -  the bounding box center \\( (c_x, c_y) \\) is only weakly correlated with its dimensions \((w, h)\). But you need to understand the full matrix form to know when this simplification breaks down (it does, for example, when vehicles are heavily occluded and the width-height correlation becomes significant).
+This simplification is justified because the state variables are approximately independent in the measurement space  -  the bounding box center \\( (c\_x, c\_y) \\) is only weakly correlated with its dimensions \((w, h)\). But you need to understand the full matrix form to know when this simplification breaks down (it does, for example, when vehicles are heavily occluded and the width-height correlation becomes significant).
 
 ## 1.3 Calculus: How Learning Happens
 
@@ -96,17 +96,17 @@ where \\( \mathbf{a}^{(l)} \\) is the activation at layer \(l\), \\( \mathbf{z}^
 
 When you train a YOLO model, the loss function is a weighted sum of three terms:
 
-\\[\mathcal{L} = \lambda_{\text{box}} \mathcal{L}_{\text{CIoU}} + \lambda_{\text{cls}} \mathcal{L}_{\text{BCE}} + \lambda_{\text{dfl}} \mathcal{L}_{\text{DFL}}\\]
+\\[\mathcal{L} = \lambda\_{\text{box}} \mathcal{L}\_{\text{CIoU}} + \lambda\_{\text{cls}} \mathcal{L}\_{\text{BCE}} + \lambda\_{\text{dfl}} \mathcal{L}\_{\text{DFL}}\\]
 
 - **CIoU Loss**  -  Complete Intersection-over-Union loss, which penalizes incorrect bounding box positions, aspect ratios, and overlap simultaneously.
-- **Binary Cross-Entropy Loss**  -  \\( \mathcal{L}_{\text{BCE}} = -\sum [y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i)] \\), used for multi-label classification in YOLO's head.
+- **Binary Cross-Entropy Loss**  -  \\( \mathcal{L}\_{\text{BCE}} = -\sum [y\_i \log(\hat{y}\_i) + (1 - y\_i) \log(1 - \hat{y}\_i)] \\), used for multi-label classification in YOLO's head.
 - **Distribution Focal Loss (DFL)**  -  A distributional formulation that refines the bounding box coordinates by learning a probability distribution over the box boundaries rather than regressing them directly.
 
 ### 1.3.2 The Gradient of the Sigmoid
 
 The sigmoid function appears everywhere in detection:
 
-\\[\sigma(x) = \frac_{1}{1 + e^{-x}}\\]
+\\[\sigma(x) = \frac{1}{1 + e^{-x}}\\]
 
 Its derivative is elegant:
 
@@ -146,9 +146,9 @@ The YOLO model learns \\( P(\text{object} \mid \mathbf{I}) \\) directly (discrim
 
 The Kalman filter update (Chapter 10) is:
 
-\\[P(\mathbf{x}_t \mid \mathbf{z}_{1:t}) \propto P(\mathbf{z}_t \mid \mathbf{x}_t) \cdot P(\mathbf{x}_t \mid \mathbf{z}_{1:t-1})\\]
+\\[P(\mathbf{x}\_t \mid \mathbf{z}\_{1:t}) \propto P(\mathbf{z}\_t \mid \mathbf{x}\_t) \cdot P(\mathbf{x}\_t \mid \mathbf{z}\_{1:t-1})\\]
 
-The **predict** step computes the prior \\( P(\mathbf{x}_t \mid \mathbf{z}_{1:t-1}) \\) by applying the motion model. The **update** step multiplies by the likelihood \\( P(\mathbf{z}_t \mid \mathbf{x}_t) \\) to get the posterior.
+The **predict** step computes the prior \\( P(\mathbf{x}\_t \mid \mathbf{z}\_{1:t-1}) \\) by applying the motion model. The **update** step multiplies by the likelihood \\( P(\mathbf{z}\_t \mid \mathbf{x}\_t) \\) to get the posterior.
 
 ### 1.4.2 IoU as a Probability of Overlap
 
@@ -188,7 +188,7 @@ The default threshold is 0.5, but in practice, you want to calibrate this. The p
 
 1. Run your model on the validation set with confidence threshold 0.0.
 2. For each threshold \\( t \in [0, 1] \\), compute precision and recall.
-3. Choose \(t\) that maximizes \\( F_1 \\) score or satisfies your precision/recall requirements.
+3. Choose \(t\) that maximizes \\( F\_1 \\) score or satisfies your precision/recall requirements.
 4. For safety-critical alerts (stop signs), bias toward recall (lower threshold, accept more false positives).
 
 ## 1.5 The Pinhole Camera Model: From 3D to 2D
@@ -199,10 +199,10 @@ The CivicSense pipeline estimates real-world distances from pixel coordinates. T
 
 A point \\( \mathbf{P} = (X, Y, Z) \\) in the real world (where \(Z\) is depth along the optical axis) projects to pixel coordinates \((u, v)\) through:
 
-\\[u = f_x \cdot \frac{X}{Z} + u_0\\]
-\\[v = f_y \cdot \frac{Y}{Z} + v_0\\]
+\\[u = f\_x \cdot \frac{X}{Z} + u\_0\\]
+\\[v = f\_y \cdot \frac{Y}{Z} + v\_0\\]
 
-where \\( (f_x, f_y) \\) is the focal length in pixels and \\( (u_0, v_0) \\) is the principal point (usually the image center).
+where \\( (f\_x, f\_y) \\) is the focal length in pixels and \\( (u\_0, v\_0) \\) is the principal point (usually the image center).
 
 For the distance estimation used in CivicSense, we invert this relationship. Given a known real-world width \(W\) (e.g., a vehicle is approximately 1.8 meters wide), and its pixel width \(w\) in the image:
 
@@ -225,11 +225,11 @@ pub fn estimate_distance(pixel_width: f32, real_width: f32, focal_length: f32) -
 
 In the default CivicSense config, `focal_length = 650.0`. This is not a physical focal length in millimeters  -  it is the focal length expressed in pixel units:
 
-\\[f_{\text{pixels}} = f_{\text{mm}} \cdot \frac{\text{image width in pixels}}{\text{sensor width in mm}}\\]
+\\[f\_{\text{pixels}} = f\_{\text{mm}} \cdot \frac{\text{image width in pixels}}{\text{sensor width in mm}}\\]
 
 For a typical dashcam with a 3.7 mm lens and a 1/2.3" sensor (6.17 mm wide) capturing 1280-pixel-wide images:
 
-\\[f_{\text{pixels}} = 3.7 \cdot \frac_{1280}{6.17} \approx 767\\]
+\\[f\_{\text{pixels}} = 3.7 \cdot \frac{1280}{6.17} \approx 767\\]
 
 The default 650 is a reasonable approximation for a slightly wider-angle lens. In production, you calibrate this using a checkerboard pattern or manufacturer specifications.
 
@@ -258,7 +258,7 @@ Every mathematical concept in this chapter appears directly in the CivicSense co
 
 3. **Distance estimation error analysis.** For a vehicle of real width 1.8 m viewed at a 30-degree angle (so the apparent width is \\( 1.8 \cdot \cos(30^\circ) \\)), compute the distance estimate error at \(Z = 10\) m, \(Z = 25\) m, \(Z = 50\) m using the pinhole formula.
 
-4. **Calibration experiment.** Run the YOLO model on your validation set with `conf_threshold = 0.0` and plot precision-recall curves. Find the threshold that maximizes \\( F_1 \\) score.
+4. **Calibration experiment.** Run the YOLO model on your validation set with `conf_threshold = 0.0` and plot precision-recall curves. Find the threshold that maximizes \\( F\_1 \\) score.
 
 ## 1.8 Key Takeaways
 

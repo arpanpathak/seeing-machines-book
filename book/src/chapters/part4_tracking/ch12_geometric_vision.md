@@ -10,7 +10,7 @@ This chapter covers the geometric computations in `src/utils/geometry.rs` that b
 
 The pinhole camera model describes the geometric relationship between 3D points in the world and their 2D projections onto the camera sensor. The core equation:
 
-\\[u = f_x \cdot \frac{X}{Z} + u_0, \quad v = f_y \cdot \frac{Y}{Z} + v_0\\]
+\\[u = f\_x \cdot \frac{X}{Z} + u\_0, \quad v = f\_y \cdot \frac{Y}{Z} + v\_0\\]
 
 For the CivicSense use case (a forward-facing dashcam with a known camera configuration), we invert this relationship to estimate real-world distances from pixel measurements.
 
@@ -54,7 +54,7 @@ These limitations mean distance estimates are approximate, not precise. The esti
 
 The relative velocity of a tracked vehicle is estimated from the change in distance between consecutive frames:
 
-\\[V_{\text{rel}} = \frac{Z_{t-1} - Z_t}{\Delta t}\\]
+\\[V\_{\text{rel}} = \frac{Z\_{t-1} - Z\_t}{\Delta t}\\]
 
 This is positive when the object is approaching (distance decreasing) and negative when receding.
 
@@ -67,7 +67,7 @@ pub fn compute_relative_velocity(prev_distance: f32, curr_distance: f32, dt: f32
 
 **Why this works:** If a vehicle was 20 m away at frame \(t-1\) and is 19 m away at frame \(t\) (with \\( \Delta t = 0.033 \\) s at 30 FPS):
 
-\\[V_{\text{rel}} = \frac{20 - 19}{0.033} \approx 30 \text{ m/s} \approx 67 \text{ mph}\\]
+\\[V\_{\text{rel}} = \frac{20 - 19}{0.033} \approx 30 \text{ m/s} \approx 67 \text{ mph}\\]
 
 This is the closing speed. If the ego vehicle is traveling at 35 mph, the lead vehicle is traveling at 35 - 67 = -32 mph (we are rapidly approaching a slower vehicle).
 
@@ -77,7 +77,7 @@ This is the closing speed. If the ego vehicle is traveling at 35 mph, the lead v
 
 The low-pass filter smooths noisy measurements by blending the current value with the previous filtered value:
 
-\\[y_t = \alpha \cdot x_t + (1 - \alpha) \cdot y_{t-1}\\]
+\\[y\_t = \alpha \cdot x\_t + (1 - \alpha) \cdot y\_{t-1}\\]
 
 ```rust
 pub fn low_pass_filter(value: f32, prev_value: f32, alpha: f32) -> f32 {
@@ -126,7 +126,7 @@ In tracking, we use IoU as a **similarity metric** between a predicted track pos
 
 ## 12.5 Bounding Box Format Conversion
 
-The Kalman filter's state vector uses center-size format \\( (c_x, c_y, w, h) \\), while the detector and analysis modules use corner format \\( (x_1, y_1, x_2, y_2) \\). The conversion:
+The Kalman filter's state vector uses center-size format \\( (c\_x, c\_y, w, h) \\), while the detector and analysis modules use corner format \\( (x\_1, y\_1, x\_2, y\_2) \\). The conversion:
 
 ```rust
 pub fn bbox_to_cxcywh(x1: f32, y1: f32, x2: f32, y2: f32) -> (f32, f32, f32, f32) {
@@ -154,11 +154,11 @@ The intersection analyzer uses a Bird's Eye View (BEV) occupancy grid. The BEV p
 
 Given the camera's height \(h\) above the ground and its pitch angle \\( \theta \\) (downward tilt), the mapping is:
 
-\\[Z = \frac{h}{\tan(\theta + \arctan(\frac{v - v_0}{f_y}))}\\]
+\\[Z = \frac{h}{\tan(\theta + \arctan(\frac{v - v\_0}{f\_y}))}\\]
 
-\\[X = \frac{Z \cdot (u - u_0)}{f_x}\\]
+\\[X = \frac{Z \cdot (u - u\_0)}{f\_x}\\]
 
-where \\( (u_0, v_0) \\) is the principal point (image center) and \\( (f_x, f_y) \\) is the focal length.
+where \\( (u\_0, v\_0) \\) is the principal point (image center) and \\( (f\_x, f\_y) \\) is the focal length.
 
 This is currently a placeholder in the code  -  the BEV grid resolution and ahead-distance are configured, but the actual projection requires camera extrinsic calibration (height and pitch angle). The TODO comment in `src/modules/intersection.rs` notes this as future work.
 

@@ -14,19 +14,19 @@ Convolutions encode these properties directly into the network architecture, red
 
 ## 3.1 The Convolution Operation: A Sliding Window of Learning
 
-A 2D convolution takes an input tensor \\( \mathbf{X} \in \mathbb{R}^{H_{\text{in}} \times W_{\text{in}} \times C_{\text{in}}} \\) and produces an output tensor \\( \mathbf{Y} \in \mathbb{R}^{H_{\text{out}} \times W_{\text{out}} \times C_{\text{out}}} \\) using a set of learnable filters (kernels) \\( \mathbf{K} \in \mathbb{R}^{K_h \times K_w \times C_{\text{in}} \times C_{\text{out}}} \\).
+A 2D convolution takes an input tensor \\( \mathbf{X} \in \mathbb{R}^{H\_{\text{in}} \times W\_{\text{in}} \times C\_{\text{in}}} \\) and produces an output tensor \\( \mathbf{Y} \in \mathbb{R}^{H\_{\text{out}} \times W\_{\text{out}} \times C\_{\text{out}}} \\) using a set of learnable filters (kernels) \\( \mathbf{K} \in \mathbb{R}^{K\_h \times K\_w \times C\_{\text{in}} \times C\_{\text{out}}} \\).
 
 Each output value at position \((i, j)\) for output channel \(k\) is:
 
-\\[\mathbf{Y}_{i,j,k} = \sum_{c=1}^{C_{\text{in}}} \sum_{u=1}^{K_h} \sum_{v=1}^{K_w} \mathbf{X}_{i+u-1, j+v-1, c} \cdot \mathbf{K}_{u,v,c,k} + b_k\\]
+\\[\mathbf{Y}\_{i,j,k} = \sum\_{c=1}^{C\_{\text{in}}} \sum\_{u=1}^{K\_h} \sum\_{v=1}^{K\_w} \mathbf{X}\_{i+u-1, j+v-1, c} \cdot \mathbf{K}\_{u,v,c,k} + b\_k\\]
 
 This is a **cross-correlation**, not a strict convolution (which would flip the kernel). But in deep learning, "convolution" colloquially means cross-correlation. The effect is identical up to a sign change.
 
 ### 3.1.1 The Output Size Formula
 
-Given input size \\( H_{\text{in}} \\), kernel size \(K\), padding \(P\), and stride \(S\):
+Given input size \\( H\_{\text{in}} \\), kernel size \(K\), padding \(P\), and stride \(S\):
 
-\\[H_{\text{out}} = \left\lfloor \frac{H_{\text{in}} + 2P - K}{S} \right\rfloor + 1\\]
+\\[H\_{\text{out}} = \left\lfloor \frac{H\_{\text{in}} + 2P - K}{S} \right\rfloor + 1\\]
 
 The same formula applies for width.
 
@@ -155,7 +155,7 @@ In practice, using SiLU instead of ReLU improves YOLO's mAP by 1-2% with no addi
 
 Max pooling selects the maximum value in each \\( K \times K \\) window:
 
-\\[\text{MaxPool}_{i,j,k} = \max_{u=1..K, v=1..K} \mathbf{Y}_{i+u-1, j+v-1, k}\\]
+\\[\text{MaxPool}\_{i,j,k} = \max\_{u=1..K, v=1..K} \mathbf{Y}\_{i+u-1, j+v-1, k}\\]
 
 Modern CNNs (including YOLOv11) have largely replaced explicit pooling layers with strided convolutions, which achieve the same downsampling effect while learning the downsampling strategy. But understanding pooling is essential for reading older literature and for understanding the spatial hierarchy.
 

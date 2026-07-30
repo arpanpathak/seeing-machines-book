@@ -12,7 +12,7 @@ This chapter explains how YOLO works, from the architectural innovations to the 
 
 YOLO divides the input image into an \\( S \times S \\) grid. Each grid cell predicts:
 
-- **\(B\) bounding boxes**, each with 4 coordinates \\( (c_x, c_y, w, h) \\) and a confidence score.
+- **\(B\) bounding boxes**, each with 4 coordinates \\( (c\_x, c\_y, w, h) \\) and a confidence score.
 - **\(C\) class probabilities** (one per class).
 
 For YOLOv8 with 80 COCO classes, 3 anchors per cell, and three detection scales, the total number of predictions per image is:
@@ -44,7 +44,7 @@ impl AnchorGrid {
 }
 ```
 
-For a \(640\) input, the strides \(8, 16, 32\) produce grids of \\( 80 \times 80 \\), \\( 40 \times 40 \\), and \\( 20 \times 20 \\) cells  -  \(6400 + 1600 + 400 = 8400\) anchor points total. Each anchor stores its grid coordinates \\( (g_x, g_y) \\) in grid-space and its stride \(s\) in pixels.
+For a \(640\) input, the strides \(8, 16, 32\) produce grids of \\( 80 \times 80 \\), \\( 40 \times 40 \\), and \\( 20 \times 20 \\) cells  -  \(6400 + 1600 + 400 = 8400\) anchor points total. Each anchor stores its grid coordinates \\( (g\_x, g\_y) \\) in grid-space and its stride \(s\) in pixels.
 
 **Why three strides?** Objects appear at different scales. A large truck close to the camera might be \\( 300 \times 300 \\) pixels and is best detected at stride 32 (the \\( 20 \times 20 \\) grid). A pedestrian 50 meters away might be only \\( 20 \times 30 \\) pixels and needs the stride-8 detection head (the \\( 80 \times 80 \\) grid). By combining predictions from multiple scales, YOLO detects objects across a wide size range.
 
@@ -54,7 +54,7 @@ The raw output from the ONNX model is a flat tensor. The decoder in `AnchorGrid:
 
 ### 4.2.1 The Decoding Equations
 
-For each anchor at grid position \\( (g_x, g_y) \\) with stride \(s\):
+For each anchor at grid position \\( (g\_x, g\_y) \\) with stride \(s\):
 
 ```rust
 let cx = (sigmoid(output[i]) * 2.0 - 0.5 + gx) * s;
@@ -65,9 +65,9 @@ let h = (sigmoid(output[3 * stride + i]) * 2.0).powi(2) * s;
 
 Let us break this down:
 
-- **Center coordinates**: \\( \sigma(t_x) \\) produces a value in \([0, 1]\). The expression \\( 2 \cdot \sigma(t_x) - 0.5 \\) maps this to \([-0.5, 1.5]\), allowing the predicted center to be slightly outside the grid cell. This handles objects whose center falls near cell boundaries. Adding \\( g_x \\) shifts to the correct grid cell, and multiplying by stride \(s\) converts to pixel coordinates.
+- **Center coordinates**: \\( \sigma(t\_x) \\) produces a value in \([0, 1]\). The expression \\( 2 \cdot \sigma(t\_x) - 0.5 \\) maps this to \([-0.5, 1.5]\), allowing the predicted center to be slightly outside the grid cell. This handles objects whose center falls near cell boundaries. Adding \\( g\_x \\) shifts to the correct grid cell, and multiplying by stride \(s\) converts to pixel coordinates.
 
-- **Width and height**: YOLOv8 uses \\( (2 \cdot \sigma(t_w))^2 \\) as the width multiplier. The square ensures positive values. The factor of 2 allows the box to be up to \(4s\) pixels wide (since \\( (2 \times 1)^2 = 4 \\)). For stride 32, this means boxes up to \\( 4 \times 32 = 128 \\) pixels wide  -  roughly the size of a vehicle in dashcam footage.
+- **Width and height**: YOLOv8 uses \\( (2 \cdot \sigma(t\_w))^2 \\) as the width multiplier. The square ensures positive values. The factor of 2 allows the box to be up to \(4s\) pixels wide (since \\( (2 \times 1)^2 = 4 \\)). For stride 32, this means boxes up to \\( 4 \times 32 = 128 \\) pixels wide  -  roughly the size of a vehicle in dashcam footage.
 
 ### 4.2.2 The Sigmoid and Why It Is There
 
@@ -153,19 +153,19 @@ Boxes smaller than 1 pixel are discarded. These arise from numerical noise in th
 
 YOLOv8/v11 uses a composite loss with three terms:
 
-\\[\mathcal{L} = \lambda_{\text{box}} \cdot \mathcal{L}_{\text{CIoU}} + \lambda_{\text{cls}} \cdot \mathcal{L}_{\text{BCE}} + \lambda_{\text{DFL}} \cdot \mathcal{L}_{\text{DFL}}\\]
+\\[\mathcal{L} = \lambda\_{\text{box}} \cdot \mathcal{L}\_{\text{CIoU}} + \lambda\_{\text{cls}} \cdot \mathcal{L}\_{\text{BCE}} + \lambda\_{\text{DFL}} \cdot \mathcal{L}\_{\text{DFL}}\\]
 
 ### 4.4.1 CIoU Loss: Better Than L1 or L2
 
 Complete IoU loss directly optimizes the overlap between predicted and ground-truth boxes:
 
-\\[\mathcal{L}_{\text{CIoU}} = 1 - \text{IoU} + \frac{\rho^2(\mathbf{b}, \mathbf{b}^{\text{gt}})}{c^2} + \alpha v\\]
+\\[\mathcal{L}\_{\text{CIoU}} = 1 - \text{IoU} + \frac{\rho^2(\mathbf{b}, \mathbf{b}^{\text{gt}})}{c^2} + \alpha v\\]
 
 where:
 - \\( \text{IoU} \\) is the Intersection-over-Union.
 - \\( \rho \\) is the Euclidean distance between box centers \\( \mathbf{b} \\) and \\( \mathbf{b}^{\text{gt}} \\).
 - \(c\) is the diagonal length of the smallest enclosing box.
-- \(v\) measures the consistency of aspect ratios: \\( \frac_{4}{\pi^2}(\arctan\frac{w^{\text{gt}}}{h^{\text{gt}}} - \arctan\frac{w}{h})^2 \\).
+- \(v\) measures the consistency of aspect ratios: \\( \frac{4}{\pi^2}(\arctan\frac{w^{\text{gt}}}{h^{\text{gt}}} - \arctan\frac{w}{h})^2 \\).
 - \\( \alpha = \frac{v}{(1 - \text{IoU}) + v} \\) is a tradeoff parameter.
 
 CIoU is superior to L1 or L2 loss because:
@@ -177,17 +177,17 @@ CIoU is superior to L1 or L2 loss because:
 
 YOLO uses binary cross-entropy (not multi-class cross-entropy) because the same object can belong to multiple classes (a "vehicle" can also be a "truck"):
 
-\\[\mathcal{L}_{\text{BCE}} = -\sum_{c=1}^{C} [y_c \log(\sigma(z_c)) + (1 - y_c) \log(1 - \sigma(z_c))]\\]
+\\[\mathcal{L}\_{\text{BCE}} = -\sum\_{c=1}^{C} [y\_c \log(\sigma(z\_c)) + (1 - y\_c) \log(1 - \sigma(z\_c))]\\]
 
-where \\( z_c \\) is the raw logit for class \(c\), \\( \sigma \\) is the sigmoid, and \\( y_c \in \{0, 1\} \\) is the ground-truth indicator.
+where \\( z\_c \\) is the raw logit for class \(c\), \\( \sigma \\) is the sigmoid, and \\( y\_c \in \{0, 1\} \\) is the ground-truth indicator.
 
 ### 4.4.3 Distribution Focal Loss (DFL)
 
 The DFL reformulates bounding box regression as a classification problem. Instead of predicting a single value for each box coordinate, the network predicts a **distribution** over discrete positions:
 
-\\[\mathcal{L}_{\text{DFL}} = -\sum_{k} \text{KL}(y_k \| \hat{y}_k)\\]
+\\[\mathcal{L}\_{\text{DFL}} = -\sum\_{k} \text{KL}(y\_k \| \hat{y}\_k)\\]
 
-where \\( y_k \\) is the target distribution (a Dirac delta at the correct position) and \\( \hat{y}_k \\) is the predicted distribution.
+where \\( y\_k \\) is the target distribution (a Dirac delta at the correct position) and \\( \hat{y}\_k \\) is the predicted distribution.
 
 The advantage: the network outputs a probability distribution over possible box positions, and you take the **expectation** (weighted average) as the final coordinate. This produces smoother, more accurate boxes because the network is penalized for being confidently wrong in a single position.
 

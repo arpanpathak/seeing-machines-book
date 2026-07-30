@@ -100,7 +100,7 @@ A YOLOv11n model in FP32 is approximately 5.5 MB. In INT8, it is ~1.4 MB. The 4x
 
 ### 6.3.1 How Quantization Works
 
-Quantization maps a range of floating-point values \\( [r_{\min}, r_{\max}] \\) to integer values \([0, 255]\):
+Quantization maps a range of floating-point values \\( [r\_{\min}, r\_{\max}] \\) to integer values \([0, 255]\):
 
 \\[r = S \cdot (q - Z)\\]
 

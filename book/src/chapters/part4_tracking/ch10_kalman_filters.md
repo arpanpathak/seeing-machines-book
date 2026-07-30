@@ -23,18 +23,18 @@ The result: a smooth, filtered trajectory that is more accurate than either the 
 
 We model each tracked object with an 8-dimensional state vector:
 
-\\[\mathbf{x} = [c_x, c_y, w, h, v_x, v_y, v_w, v_h]^T\\]
+\\[\mathbf{x} = [c\_x, c\_y, w, h, v\_x, v\_y, v\_w, v\_h]^T\\]
 
 where:
-- \\( (c_x, c_y) \\) is the bounding box center in pixels.
+- \\( (c\_x, c\_y) \\) is the bounding box center in pixels.
 - \((w, h)\) is the width and height in pixels.
-- \\( (v_x, v_y, v_w, v_h) \\) are the velocities (rate of change per frame).
+- \\( (v\_x, v\_y, v\_w, v\_h) \\) are the velocities (rate of change per frame).
 
 The state evolves according to a linear **process model**:
 
-\\[\mathbf{x}_t = \mathbf{F} \cdot \mathbf{x}_{t-1} + \mathbf{w}_t\\]
+\\[\mathbf{x}\_t = \mathbf{F} \cdot \mathbf{x}\_{t-1} + \mathbf{w}\_t\\]
 
-where \\( \mathbf{F} \\) is the state transition matrix and \\( \mathbf{w}_t \sim \mathcal{N}(0, \mathbf{Q}) \\) is process noise.
+where \\( \mathbf{F} \\) is the state transition matrix and \\( \mathbf{w}\_t \sim \mathcal{N}(0, \mathbf{Q}) \\) is process noise.
 
 For a constant-velocity model (the default in CivicSense and Deep SORT):
 
@@ -55,11 +55,11 @@ This matrix says: the new position = old position + velocity (dt = 1 frame). The
 
 The measurement (YOLO detection) is a 4-element vector:
 
-\\[\mathbf{z} = [c_x, c_y, w, h]^T\\]
+\\[\mathbf{z} = [c\_x, c\_y, w, h]^T\\]
 
 The measurement model relates the state to the measurement:
 
-\\[\mathbf{z}_t = \mathbf{H} \cdot \mathbf{x}_t + \mathbf{v}_t\\]
+\\[\mathbf{z}\_t = \mathbf{H} \cdot \mathbf{x}\_t + \mathbf{v}\_t\\]
 
 where \\( \mathbf{H} \\) extracts the position components (first 4 elements) from the state:
 
@@ -70,7 +70,7 @@ where \\( \mathbf{H} \\) extracts the position components (first 4 elements) fro
 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0
 \end{bmatrix}\\]
 
-And \\( \mathbf{v}_t \sim \mathcal{N}(0, \mathbf{R}) \\) is measurement noise.
+And \\( \mathbf{v}\_t \sim \mathcal{N}(0, \mathbf{R}) \\) is measurement noise.
 
 ### 10.2.3 The Full Kalman Equations
 
@@ -78,23 +78,23 @@ The Kalman filter proceeds in two steps at each frame:
 
 **Predict step:**
 
-\\[\hat{\mathbf{x}}_{t|t-1} = \mathbf{F} \cdot \hat{\mathbf{x}}_{t-1|t-1}\\]
+\\[\hat{\mathbf{x}}\_{t|t-1} = \mathbf{F} \cdot \hat{\mathbf{x}}\_{t-1|t-1}\\]
 
-\\[\mathbf{P}_{t|t-1} = \mathbf{F} \cdot \mathbf{P}_{t-1|t-1} \cdot \mathbf{F}^T + \mathbf{Q}\\]
+\\[\mathbf{P}\_{t|t-1} = \mathbf{F} \cdot \mathbf{P}\_{t-1|t-1} \cdot \mathbf{F}^T + \mathbf{Q}\\]
 
 Where \\( \mathbf{P} \\) is the state covariance matrix  -  our uncertainty about the state. The predict step increases uncertainty (adds \\( \mathbf{Q} \\)).
 
 **Update step:**
 
-\\[\mathbf{K}_t = \mathbf{P}_{t|t-1} \cdot \mathbf{H}^T \cdot (\mathbf{H} \cdot \mathbf{P}_{t|t-1} \cdot \mathbf{H}^T + \mathbf{R})^{-1}\\]
+\\[\mathbf{K}\_t = \mathbf{P}\_{t|t-1} \cdot \mathbf{H}^T \cdot (\mathbf{H} \cdot \mathbf{P}\_{t|t-1} \cdot \mathbf{H}^T + \mathbf{R})^{-1}\\]
 
-\\[\hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} + \mathbf{K}_t \cdot (\mathbf{z}_t - \mathbf{H} \cdot \hat{\mathbf{x}}_{t|t-1})\\]
+\\[\hat{\mathbf{x}}\_{t|t} = \hat{\mathbf{x}}\_{t|t-1} + \mathbf{K}\_t \cdot (\mathbf{z}\_t - \mathbf{H} \cdot \hat{\mathbf{x}}\_{t|t-1})\\]
 
-\\[\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t \cdot \mathbf{H}) \cdot \mathbf{P}_{t|t-1}\\]
+\\[\mathbf{P}\_{t|t} = (\mathbf{I} - \mathbf{K}\_t \cdot \mathbf{H}) \cdot \mathbf{P}\_{t|t-1}\\]
 
-Where \\( \mathbf{K}_t \\) is the **Kalman gain**  -  it determines how much we trust the measurement vs the prediction:
-- If measurement noise \\( \mathbf{R} \\) is large, \\( \mathbf{K}_t \\) is small, and we trust the prediction more.
-- If process noise \\( \mathbf{Q} \\) is large (our model is uncertain), \\( \mathbf{K}_t \\) is larger, and we trust the measurement more.
+Where \\( \mathbf{K}\_t \\) is the **Kalman gain**  -  it determines how much we trust the measurement vs the prediction:
+- If measurement noise \\( \mathbf{R} \\) is large, \\( \mathbf{K}\_t \\) is small, and we trust the prediction more.
+- If process noise \\( \mathbf{Q} \\) is large (our model is uncertain), \\( \mathbf{K}\_t \\) is larger, and we trust the measurement more.
 
 ### 10.2.4 The Scalar-Gain Approximation
 
@@ -104,19 +104,19 @@ The CivicSense Kalman filter uses a **scalar-gain approximation**: instead of co
 
 **Innovation:**
 
-\\[y_i = z_i - H_i \cdot \mathbf{x} \quad \text{for } i = 0, 1, 2, 3\\]
+\\[y\_i = z\_i - H\_i \cdot \mathbf{x} \quad \text{for } i = 0, 1, 2, 3\\]
 
 **Scalar gain:**
 
-\\[K_i = \frac{P_{i,i}}{P_{i,i} + R} \quad \text{for } i = 0, 1, 2, 3\\]
+\\[K\_i = \frac{P\_{i,i}}{P\_{i,i} + R} \quad \text{for } i = 0, 1, 2, 3\\]
 
 **Update:**
 
-\\[x_i \leftarrow x_i + K_i \cdot y_i\\]
+\\[x\_i \leftarrow x\_i + K\_i \cdot y\_i\\]
 
-\\[P_{i,i} \leftarrow (1 - K_i) \cdot P_{i,i}\\]
+\\[P\_{i,i} \leftarrow (1 - K\_i) \cdot P\_{i,i}\\]
 
-This approximation assumes the state variables are uncorrelated (off-diagonal covariances are zero). In practice, bounding box center \\( (c_x, c_y) \\) and dimensions \((w, h)\) are approximately independent for typical traffic scenes, so the approximation is good.
+This approximation assumes the state variables are uncorrelated (off-diagonal covariances are zero). In practice, bounding box center \\( (c\_x, c\_y) \\) and dimensions \((w, h)\) are approximately independent for typical traffic scenes, so the approximation is good.
 
 ## 10.3 The Rust Implementation
 
@@ -132,7 +132,7 @@ struct KalmanFilter {
 }
 ```
 
-Note: we store the full \\( 8 \times 8 \\) matrix (64 elements) as a flat array for cache efficiency. The \\( n \times n \\) matrix stored row-major means element \((i,j)\) is at index \\( i \times n + j \\). The diagonal element \\( P_{i,i} \\) is at index \\( i \times 9 \\) (since \\( i \times 8 + i = i \times 9 \\)).
+Note: we store the full \\( 8 \times 8 \\) matrix (64 elements) as a flat array for cache efficiency. The \\( n \times n \\) matrix stored row-major means element \((i,j)\) is at index \\( i \times n + j \\). The diagonal element \\( P\_{i,i} \\) is at index \\( i \times 9 \\) (since \\( i \times 8 + i = i \times 9 \\)).
 
 ### 10.3.2 Initialization
 
