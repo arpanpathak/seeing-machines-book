@@ -2,7 +2,7 @@
 
 > *"The key to intelligence is the ability to ignore what is irrelevant."* — Herbert Simon
 
-A dense (fully-connected) layer connects every input to every output. For a $640 \times 640$ RGB image that means $640 \times 640 \times 3 = 1,228,800$ inputs to a single neuron. A dense layer with 1024 outputs would have $1.2$ *billion* parameters. The layer would not fit in memory, would overfit catastrophically, and would ignore the spatial structure of the data.
+A dense (fully-connected) layer connects every input to every output. For a \\( 640 \times 640 \\) RGB image that means \\( 640 \times 640 \times 3 = 1,228,800 \\) inputs to a single neuron. A dense layer with 1024 outputs would have $1.2$ *billion* parameters. The layer would not fit in memory, would overfit catastrophically, and would ignore the spatial structure of the data.
 
 Convolutional neural networks (CNNs) solve this by exploiting three properties of natural images:
 
@@ -14,29 +14,29 @@ Convolutions encode these properties directly into the network architecture, red
 
 ## 3.1 The Convolution Operation: A Sliding Window of Learning
 
-A 2D convolution takes an input tensor $\mathbf{X} \in \mathbb{R}^{H_{\text{in}} \times W_{\text{in}} \times C_{\text{in}}}$ and produces an output tensor $\mathbf{Y} \in \mathbb{R}^{H_{\text{out}} \times W_{\text{out}} \times C_{\text{out}}}$ using a set of learnable filters (kernels) $\mathbf{K} \in \mathbb{R}^{K_h \times K_w \times C_{\text{in}} \times C_{\text{out}}}$.
+A 2D convolution takes an input tensor \\( \mathbf{X} \in \mathbb{R}^{H_{\text{in}} \times W_{\text{in}} \times C_{\text{in}}} \\) and produces an output tensor \\( \mathbf{Y} \in \mathbb{R}^{H_{\text{out}} \times W_{\text{out}} \times C_{\text{out}}} \\) using a set of learnable filters (kernels) \\( \mathbf{K} \in \mathbb{R}^{K_h \times K_w \times C_{\text{in}} \times C_{\text{out}}} \\).
 
 Each output value at position $(i, j)$ for output channel $k$ is:
 
-$$\mathbf{Y}_{i,j,k} = \sum_{c=1}^{C_{\text{in}}} \sum_{u=1}^{K_h} \sum_{v=1}^{K_w} \mathbf{X}_{i+u-1, j+v-1, c} \cdot \mathbf{K}_{u,v,c,k} + b_k$$
+\\[\mathbf{Y}_{i,j,k} = \sum_{c=1}^{C_{\text{in}}} \sum_{u=1}^{K_h} \sum_{v=1}^{K_w} \mathbf{X}_{i+u-1, j+v-1, c} \cdot \mathbf{K}_{u,v,c,k} + b_k\\]
 
 This is a **cross-correlation**, not a strict convolution (which would flip the kernel). But in deep learning, "convolution" colloquially means cross-correlation. The effect is identical up to a sign change.
 
 ### 3.1.1 The Output Size Formula
 
-Given input size $H_{\text{in}}$, kernel size $K$, padding $P$, and stride $S$:
+Given input size \\( H_{\text{in}} \\), kernel size $K$, padding $P$, and stride $S$:
 
-$$H_{\text{out}} = \left\lfloor \frac{H_{\text{in}} + 2P - K}{S} \right\rfloor + 1$$
+\\[H_{\text{out}} = \left\lfloor \frac{H_{\text{in}} + 2P - K}{S} \right\rfloor + 1\\]
 
 The same formula applies for width.
 
 | Parameter | Typical Value | Effect |
 |-----------|--------------|--------|
-| Kernel size $K$ | $3 \times 3$ (modern), $5 \times 5$, $7 \times 7$ | Larger kernel = larger receptive field, more parameters |
+| Kernel size $K$ | \\( 3 \times 3 \\) (modern), \\( 5 \times 5 \\), \\( 7 \times 7 \\) | Larger kernel = larger receptive field, more parameters |
 | Stride $S$ | 1 (feature extraction), 2 (downsampling) | Higher stride reduces spatial dimensions |
 | Padding $P$ | $S = 1, P = (K-1)/2$ gives "same" padding | Maintains spatial dimensions |
 
-In YOLOv11, the backbone uses $3 \times 3$ convolutions with stride 2 to downsample (reducing $640 \to 320 \to 160 \to 80 \to 40 \to 20$) while increasing the channel count ($3 \to 16 \to 32 \to 64 \to 128 \to 256$).
+In YOLOv11, the backbone uses \\( 3 \times 3 \\) convolutions with stride 2 to downsample (reducing \\( 640 \to 320 \to 160 \to 80 \to 40 \to 20 \\)) while increasing the channel count (\\( 3 \to 16 \to 32 \to 64 \to 128 \to 256 \\)).
 
 ## 3.2 Implementing Convolution in Rust (The Inference Engine)
 
@@ -106,23 +106,23 @@ However, camera sensors output in **HWC** layout (Height-Width-Channel), where e
 
 ## 3.3 The Receptive Field: How Far Can a Neuron See?
 
-The receptive field of a neuron is the region of the input image that can influence its activation. For a single $3 \times 3$ convolution, the receptive field is $3 \times 3$. Stack two such convolutions, and the receptive field grows to $5 \times 5$. Stack $n$ convolutions, and the receptive field is $(2n + 1) \times (2n + 1)$.
+The receptive field of a neuron is the region of the input image that can influence its activation. For a single \\( 3 \times 3 \\) convolution, the receptive field is \\( 3 \times 3 \\). Stack two such convolutions, and the receptive field grows to \\( 5 \times 5 \\). Stack $n$ convolutions, and the receptive field is \\( (2n + 1) \times (2n + 1) \\).
 
-But with stride-2 downsampling, the effective receptive field grows exponentially. After a $3 \times 3$ stride-2 convolution, the output is half the spatial resolution, and the next $3 \times 3$ convolution operates on features that already represent a $6 \times 6$ region of the original image.
+But with stride-2 downsampling, the effective receptive field grows exponentially. After a \\( 3 \times 3 \\) stride-2 convolution, the output is half the spatial resolution, and the next \\( 3 \times 3 \\) convolution operates on features that already represent a \\( 6 \times 6 \\) region of the original image.
 
-This is why deep CNNs can detect both fine details (edges in early layers) and global structures (cars in late layers). The YOLO backbone, with its 5 downsampling stages, produces features at $20 \times 20$ resolution from a $640 \times 640$ input, where each feature vector represents a $32 \times 32$ patch of the original image — roughly the size of a small vehicle at typical dashcam distances.
+This is why deep CNNs can detect both fine details (edges in early layers) and global structures (cars in late layers). The YOLO backbone, with its 5 downsampling stages, produces features at \\( 20 \times 20 \\) resolution from a \\( 640 \times 640 \\) input, where each feature vector represents a \\( 32 \times 32 \\) patch of the original image — roughly the size of a small vehicle at typical dashcam distances.
 
 ### 3.3.1 Why This Matters for YOLO's Output Grid
 
-YOLO divides the image into a grid. For the standard $640 \times 640$ input with a $20 \times 20$ output grid (stride 32), each grid cell is responsible for detecting objects whose center falls within that $32 \times 32$ region of the input. The $20 \times 20 = 400$ grid cells, combined with multiple anchors per cell, give 8400 predictions (three scales: $80 \times 80 + 40 \times 40 + 20 \times 20$).
+YOLO divides the image into a grid. For the standard \\( 640 \times 640 \\) input with a \\( 20 \times 20 \\) output grid (stride 32), each grid cell is responsible for detecting objects whose center falls within that \\( 32 \times 32 \\) region of the input. The \\( 20 \times 20 = 400 \\) grid cells, combined with multiple anchors per cell, give 8400 predictions (three scales: \\( 80 \times 80 + 40 \times 40 + 20 \times 20 \\)).
 
-The grid cell size determines what YOLO can detect. A $32 \times 32$ grid cell can detect a car (typically $100 \times 100$ px in dashcam footage at 50m), but the smallest objects need the $80 \times 80$ grid (stride 8, effective $8 \times 8$ pixel region). This is why YOLO has multiple detection heads at different scales.
+The grid cell size determines what YOLO can detect. A \\( 32 \times 32 \\) grid cell can detect a car (typically \\( 100 \times 100 \\) px in dashcam footage at 50m), but the smallest objects need the \\( 80 \times 80 \\) grid (stride 8, effective \\( 8 \times 8 \\) pixel region). This is why YOLO has multiple detection heads at different scales.
 
 ## 3.4 Activation Functions for CNNs
 
 ### 3.4.1 ReLU: The Workhorse
 
-$$\text{ReLU}(x) = \max(0, x)$$
+\\[\text{ReLU}(x) = \max(0, x)\\]
 
 ReLU is the default activation for hidden layers in CNNs. Its gradient is 1 for $x > 0$ and 0 for $x < 0$. This avoids the vanishing gradient problem of sigmoid (whose gradient maxes out at 0.25).
 
@@ -130,7 +130,7 @@ But ReLU has a problem: **dead neurons**. If a neuron's output is negative for a
 
 ### 3.4.2 SiLU / Swish: The Modern Choice
 
-$$\text{SiLU}(x) = x \cdot \sigma(x)$$
+\\[\text{SiLU}(x) = x \cdot \sigma(x)\\]
 
 YOLOv11 uses the SiLU (Sigmoid Linear Unit) activation, also called Swish:
 
@@ -147,15 +147,15 @@ def silu(x: NDArray[np.float64]) -> NDArray[np.float64]:
 SiLU has several advantages over ReLU:
 - **Smooth gradient** everywhere (no discontinuity at $x=0$).
 - **Non-monotonic** — the function dips below zero for negative inputs, then rises, creating a "bump" that acts as a soft feature gating mechanism.
-- **Self-gating** — the sigmoid factor $\sigma(x)$ acts as a learned gate that passes information when $x$ is large and suppresses it when $x$ is small.
+- **Self-gating** — the sigmoid factor \\( \sigma(x) \\) acts as a learned gate that passes information when $x$ is large and suppresses it when $x$ is small.
 
 In practice, using SiLU instead of ReLU improves YOLO's mAP by 1-2% with no additional computational cost at inference (the sigmoid is fused into the preceding convolution in optimized ONNX runtimes).
 
 ## 3.5 Pooling: Trading Space for Certainty
 
-Max pooling selects the maximum value in each $K \times K$ window:
+Max pooling selects the maximum value in each \\( K \times K \\) window:
 
-$$\text{MaxPool}_{i,j,k} = \max_{u=1..K, v=1..K} \mathbf{Y}_{i+u-1, j+v-1, k}$$
+\\[\text{MaxPool}_{i,j,k} = \max_{u=1..K, v=1..K} \mathbf{Y}_{i+u-1, j+v-1, k}\\]
 
 Modern CNNs (including YOLOv11) have largely replaced explicit pooling layers with strided convolutions, which achieve the same downsampling effect while learning the downsampling strategy. But understanding pooling is essential for reading older literature and for understanding the spatial hierarchy.
 
@@ -194,11 +194,11 @@ The SPPF (Spatial Pyramid Pooling Fast) module applies max pooling with differen
 
 The convolutional backbone in the CivicSense pipeline transforms raw pixels into a feature-rich tensor that the detection head can interpret. Here is the data flow:
 
-1. **Input**: $1280 \times 720$ RGB frame from the dashcam.
-2. **Letterbox**: Resize to $640 \times 640$ with aspect-ratio preservation and gray padding.
+1. **Input**: \\( 1280 \times 720 \\) RGB frame from the dashcam.
+2. **Letterbox**: Resize to \\( 640 \times 640 \\) with aspect-ratio preservation and gray padding.
 3. **Normalization**: Scale pixel values from $[0, 255]$ to $[0, 1]$ (the range the model was trained on).
 4. **CHW Rearrangement**: Convert HWC pixel layout to CHW tensor layout.
-5. **Backbone**: 6 stages of convolution + CSP blocks, reducing resolution from $640 \to 20$.
+5. **Backbone**: 6 stages of convolution + CSP blocks, reducing resolution from \\( 640 \to 20 \\).
 6. **Neck (FPN/PAN)**: Feature Pyramid Network combines multi-scale features, passing both high-resolution (detail) and low-resolution (context) information to the detection head.
 7. **Detection Head**: Three output heads at strides 8, 16, 32 produce bounding boxes at different scales.
 
@@ -212,7 +212,7 @@ The entire pipeline, from raw bytes to bounding box coordinates, is implemented 
 
 3. **Visualize filters.** Take the first convolutional layer of a pretrained YOLO model and visualize the learned filters as RGB images. What patterns do you observe?
 
-4. **Letterbox analysis.** Take a $1280 \times 720$ image, apply the letterbox transform to $640 \times 640$, then plot the padded regions. Verify that the center of the image is preserved and the aspect ratio is maintained.
+4. **Letterbox analysis.** Take a \\( 1280 \times 720 \\) image, apply the letterbox transform to \\( 640 \times 640 \\), then plot the padded regions. Verify that the center of the image is preserved and the aspect ratio is maintained.
 
 ## 3.9 Key Takeaways
 

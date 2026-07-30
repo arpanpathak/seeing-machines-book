@@ -16,9 +16,9 @@ A biological neuron receives electrical signals through dendrites, integrates th
 
 An artificial neuron does something mathematically analogous but physiologically dubious:
 
-$$y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right)$$
+\\[y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right)\\]
 
-where $x_i$ are inputs, $w_i$ are weights, $b$ is a bias, and $\sigma$ is a nonlinear activation function.
+where \\( x_i \\) are inputs, \\( w_i \\) are weights, $b$ is a bias, and \\( \sigma \\) is a nonlinear activation function.
 
 The key insight — and the one that took AI research decades to internalize — is that **composition is the secret**. A single neuron can only learn a linear decision boundary (plus the sigmoid curve). But two layers of neurons can approximate any continuous function to arbitrary accuracy (the Universal Approximation Theorem). And deep networks (many layers) can do this with exponentially fewer parameters than shallow networks.
 
@@ -59,10 +59,10 @@ A single neuron is slow. A **layer** of $m$ neurons, operating on a batch of $b$
 
 A fully-connected (dense) layer performs:
 
-$$\mathbf{Z} = \mathbf{X}\mathbf{W}^T + \mathbf{b}$$
-$$\mathbf{A} = \sigma(\mathbf{Z})$$
+\\[\mathbf{Z} = \mathbf{X}\mathbf{W}^T + \mathbf{b}\\]
+\\[\mathbf{A} = \sigma(\mathbf{Z})\\]
 
-where $\mathbf{X} \in \mathbb{R}^{b \times n}$, $\mathbf{W} \in \mathbb{R}^{m \times n}$, and $\mathbf{b} \in \mathbb{R}^{m}$.
+where \\( \mathbf{X} \in \mathbb{R}^{b \times n} \\), \\( \mathbf{W} \in \mathbb{R}^{m \times n} \\), and \\( \mathbf{b} \in \mathbb{R}^{m} \\).
 
 Note the dimensions carefully:
 - The input matrix has rows = batch samples, columns = features.
@@ -130,27 +130,27 @@ class DenseLayer:
         return self.activation(self._z)
 ```
 
-**What is Xavier initialization?** Named after Xavier Glorot, it sets the initial weight variance to $2 / (n_{\text{in}} + n_{\text{out}})$. The intuition: if you initialize weights too large, the activations in deep layers explode toward $\pm \infty$ (sigmoid saturates, gradients vanish). If too small, activations shrink to zero and nothing learns. Xavier initialization keeps the variance of activations roughly constant across layers, which keeps gradients flowing.
+**What is Xavier initialization?** Named after Xavier Glorot, it sets the initial weight variance to \\( 2 / (n_{\text{in}} + n_{\text{out}}) \\). The intuition: if you initialize weights too large, the activations in deep layers explode toward \\( \pm \infty \\) (sigmoid saturates, gradients vanish). If too small, activations shrink to zero and nothing learns. Xavier initialization keeps the variance of activations roughly constant across layers, which keeps gradients flowing.
 
 ## 2.3 The Backward Pass: The Chain Rule, Materialized
 
 Forward propagation computes the output. Backpropagation computes the gradient of the loss with respect to every parameter. The key insight is that the gradient at each layer can be computed from the gradient at the next layer — the chain rule propagated backward.
 
-For a single dense layer $\mathbf{A} = \sigma(\mathbf{X}\mathbf{W}^T + \mathbf{b})$, the gradients are:
+For a single dense layer \\( \mathbf{A} = \sigma(\mathbf{X}\mathbf{W}^T + \mathbf{b}) \\), the gradients are:
 
-Let $\mathbf{Z} = \mathbf{X}\mathbf{W}^T + \mathbf{b}$ and $\mathbf{A} = \sigma(\mathbf{Z})$.
+Let \\( \mathbf{Z} = \mathbf{X}\mathbf{W}^T + \mathbf{b} \\) and \\( \mathbf{A} = \sigma(\mathbf{Z}) \\).
 
-If $\frac{\partial L}{\partial \mathbf{A}}$ is known (the "upstream gradient"), then:
+If \\( \frac{\partial L}{\partial \mathbf{A}} \\) is known (the "upstream gradient"), then:
 
-$$\frac{\partial L}{\partial \mathbf{Z}} = \frac{\partial L}{\partial \mathbf{A}} \odot \sigma'(\mathbf{Z})$$
+\\[\frac{\partial L}{\partial \mathbf{Z}} = \frac{\partial L}{\partial \mathbf{A}} \odot \sigma'(\mathbf{Z})\\]
 
-$$\frac{\partial L}{\partial \mathbf{W}} = \left(\frac{\partial L}{\partial \mathbf{Z}}\right)^T \mathbf{X}$$
+\\[\frac{\partial L}{\partial \mathbf{W}} = \left(\frac{\partial L}{\partial \mathbf{Z}}\right)^T \mathbf{X}\\]
 
-$$\frac{\partial L}{\partial \mathbf{b}} = \sum_{\text{batch}} \frac{\partial L}{\partial \mathbf{Z}} \quad \text{(sum over batch dimension)}$$
+\\[\frac{\partial L}{\partial \mathbf{b}} = \sum_{\text{batch}} \frac{\partial L}{\partial \mathbf{Z}} \quad \text{(sum over batch dimension)}\\]
 
-$$\frac{\partial L}{\partial \mathbf{X}} = \frac{\partial L}{\partial \mathbf{Z}} \mathbf{W}$$
+\\[\frac{\partial L}{\partial \mathbf{X}} = \frac{\partial L}{\partial \mathbf{Z}} \mathbf{W}\\]
 
-The last gradient ($\partial L / \partial \mathbf{X}$) is what gets passed to the previous layer.
+The last gradient (\\( \partial L / \partial \mathbf{X} \\)) is what gets passed to the previous layer.
 
 ### 2.3.1 Implementing Backpropagation
 
@@ -198,7 +198,7 @@ def backward(
     return grad_input
 ```
 
-**Why the transpose?** The arrangement of transposes is a common source of bugs. The rule: if $\mathbf{Z} = \mathbf{X}\mathbf{W}^T$, then $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^T \mathbf{X}$. The shapes work out: $\mathbb{R}^{m \times b} \cdot \mathbb{R}^{b \times n} = \mathbb{R}^{m \times n}$, matching $\mathbf{W}$'s shape. Always verify your gradient shapes when implementing backprop.
+**Why the transpose?** The arrangement of transposes is a common source of bugs. The rule: if \\( \mathbf{Z} = \mathbf{X}\mathbf{W}^T \\), then \\( \partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^T \mathbf{X} \\). The shapes work out: \\( \mathbb{R}^{m \times b} \cdot \mathbb{R}^{b \times n} = \mathbb{R}^{m \times n} \\), matching \\( \mathbf{W} \\)'s shape. Always verify your gradient shapes when implementing backprop.
 
 ## 2.4 The Loss Function: What Are We Optimizing?
 
@@ -208,13 +208,13 @@ The loss function quantifies "how wrong" the network's prediction is. For object
 
 For a multi-class classification problem with $C$ classes:
 
-$$\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(\hat{y}_{i,c})$$
+\\[\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(\hat{y}_{i,c})\\]
 
-where $y_{i,c}$ is 1 if sample $i$ belongs to class $c$ (0 otherwise), and $\hat{y}_{i,c}$ is the predicted probability.
+where \\( y_{i,c} \\) is 1 if sample $i$ belongs to class $c$ (0 otherwise), and \\( \hat{y}_{i,c} \\) is the predicted probability.
 
 The gradient of cross-entropy with respect to the logits (input to softmax) has a beautiful closed form:
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{z}_i} = \hat{\mathbf{y}}_i - \mathbf{y}_i$$
+\\[\frac{\partial \mathcal{L}}{\partial \mathbf{z}_i} = \hat{\mathbf{y}}_i - \mathbf{y}_i\\]
 
 That is: the gradient is simply the difference between the predicted probability distribution and the ground truth distribution. If the network predicts 0.9 for the correct class but the true label is 1.0, the gradient is $0.9 - 1.0 = -0.1$ (pushing the logit up). If it predicts 0.1 for the correct class, the gradient is $0.1 - 1.0 = -0.9$ (a stronger push).
 
@@ -254,7 +254,7 @@ def cross_entropy_loss(
     return loss, grad
 ```
 
-The `1e-15` epsilon is critical. Without it, if the network becomes overconfident and assigns probability 1.0 to the correct class, $\log(1.0) = 0$ which is fine. But if it assigns 0.0 to the correct class (which happens when softmax saturates), $\log(0) = -\infty$ which breaks everything. The epsilon ensures numerical stability.
+The `1e-15` epsilon is critical. Without it, if the network becomes overconfident and assigns probability 1.0 to the correct class, \\( \log(1.0) = 0 \\) which is fine. But if it assigns 0.0 to the correct class (which happens when softmax saturates), \\( \log(0) = -\infty \\) which breaks everything. The epsilon ensures numerical stability.
 
 ## 2.5 The Training Loop: Putting It All Together
 
@@ -307,7 +307,7 @@ def train_step(
 
 ### 2.5.1 Why This Works: The Loss Landscape
 
-The loss function defines a surface in parameter space — an $(n_{\text{params}})$-dimensional landscape where each point is a specific weight configuration and the height is the loss value. Gradient descent walks downhill on this landscape.
+The loss function defines a surface in parameter space — an \\( (n_{\text{params}}) \\)-dimensional landscape where each point is a specific weight configuration and the height is the loss value. Gradient descent walks downhill on this landscape.
 
 But here is the uncomfortable truth: for deep networks, this landscape is not a nice convex bowl. It is a rugged, high-dimensional terrain with:
 - **Local minima** that are often good enough (contrary to myth, local minima in deep nets are rare; saddle points are the real problem).
@@ -338,11 +338,11 @@ When you train a YOLO model in Chapter 5, you will not write the backward pass m
 
 ## 2.7 Exercises
 
-1. **Backprop by hand.** Compute the forward and backward pass for a 2-layer network (input $\to$ hidden $\to$ output) with sigmoid activations for a single sample. Verify that your hand-computed gradients match your autograd implementation.
+1. **Backprop by hand.** Compute the forward and backward pass for a 2-layer network (input \\( \to \\) hidden \\( \to \\) output) with sigmoid activations for a single sample. Verify that your hand-computed gradients match your autograd implementation.
 
 2. **Implement a 3-layer network.** Extend the code from this chapter to add a hidden layer. Train it on the Iris dataset and achieve >90% accuracy. Type-annotate everything.
 
-3. **Gradient checking.** Write a function that numerically approximates gradients using finite differences: $\frac{\partial L}{\partial w_i} \approx \frac{L(w_i + \epsilon) - L(w_i - \epsilon)}{2\epsilon}$. Verify that your backprop gradients match the numerical gradients to within $1 \times 10^{-5}$.
+3. **Gradient checking.** Write a function that numerically approximates gradients using finite differences: \\( \frac{\partial L}{\partial w_i} \approx \frac{L(w_i + \epsilon) - L(w_i - \epsilon)}{2\epsilon} \\). Verify that your backprop gradients match the numerical gradients to within \\( 1 \times 10^{-5} \\).
 
 4. **Visualize the loss landscape.** Train a 2-layer network on a 2D synthetic dataset. After training, sample the loss on a 2D slice of parameter space and plot it as a contour map. Identify the minimum your SGD found.
 
@@ -350,7 +350,7 @@ When you train a YOLO model in Chapter 5, you will not write the backward pass m
 
 - A neural network is a composition of affine transformations and nonlinearities. The composition is what gives it representational power.
 - Backpropagation is the chain rule applied efficiently to compute gradients through a computation graph.
-- The gradient of cross-entropy loss with softmax is the simple difference $(\hat{y} - y)$, which makes training numerically well-behaved.
+- The gradient of cross-entropy loss with softmax is the simple difference \\( (\hat{y} - y) \\), which makes training numerically well-behaved.
 - Xavier initialization is essential for deep networks. Without it, gradients vanish or explode.
 - Type annotations in Python are not just documentation — they prevent shape-mismatch bugs that would otherwise silently produce wrong results.
 

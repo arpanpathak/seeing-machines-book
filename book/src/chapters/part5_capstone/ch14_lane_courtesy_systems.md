@@ -30,8 +30,8 @@ fn assign_lane(&self, bbox: &(f32, f32, f32, f32)) -> usize {
 
 For a 1280-pixel-wide frame:
 - Left lane: centroid $x < 427$
-- Ego lane: $427 \leq x < 853$
-- Right lane: $x \geq 853$
+- Ego lane: \\( 427 \leq x < 853 \\)
+- Right lane: \\( x \geq 853 \\)
 
 **Why this is an approximation:** The trisection assumes three equal-width lanes, which is rarely true in practice. The ego vehicle's lane is centered in the frame, but the lane widths depend on the road geometry. Lane detection (using lane-line detection) would provide accurate lane boundaries. The trisection is a placeholder that works for multi-lane highways with consistent lane widths.
 
@@ -108,7 +108,7 @@ fn compute_lane_speeds(&mut self, lane_dists: &[Vec<f32>; 3], dt_secs: f32) {
 
 **Key detail:** We compute the average speed across all vehicles in a lane, not the speed of a single vehicle. This provides robustness: if one vehicle's distance estimate is noisy, the average across multiple vehicles dampens the error.
 
-**The 2.237 conversion factor:** `compute_relative_velocity` returns speed in meters per second. Converting to miles per hour: $1 \text{ m/s} = 2.237 \text{ mph}$.
+**The 2.237 conversion factor:** `compute_relative_velocity` returns speed in meters per second. Converting to miles per hour: \\( 1 \text{ m/s} = 2.237 \text{ mph} \\).
 
 ## 14.3 Hysteresis: Avoiding Nuisance Alerts
 
@@ -260,7 +260,7 @@ The primary failure mode is **turning lane confusion**: when a right lane become
 
 - Lane assignment uses simple frame trisection; a vanishing-point-based approach would be more accurate.
 - Velocity is estimated from inter-frame distance changes, averaged across all vehicles in a lane.
-- The low-pass filter ($\alpha = 0.3$) smooths noisy speed estimates with ~3-frame response.
+- The low-pass filter (\\( \alpha = 0.3 \\)) smooths noisy speed estimates with ~3-frame response.
 - Hysteresis (3-second timer) prevents nuisance alerts from transient speed differentials.
 - The ego speed fallback (GPS/ODO speed) handles cases where the ego lane is empty.
 - The primary failure mode is turn-lane confusion — distinguishing through lanes from turn lanes requires additional classification.

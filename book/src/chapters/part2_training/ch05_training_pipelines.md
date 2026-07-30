@@ -159,7 +159,7 @@ In the Rust training pipeline, data loading is integrated into the binary. The e
 
 ### 5.2.1 Mosaic Augmentation
 
-Mosaic augmentation combines 4 training images into a single $640 \times 640$ composite:
+Mosaic augmentation combines 4 training images into a single \\( 640 \times 640 \\) composite:
 
 ```python
 import cv2

@@ -119,7 +119,7 @@ fn letterbox(
 }
 ```
 
-**Why is this on the hot path and yet we use `to_vec()` and `from_raw()`?** This is a valid concern. The `frame.to_vec()` call clones the entire camera frame — approximately 2.76 MB for a $1280 \times 720$ RGB frame. On a CPU with limited RAM bandwidth (Raspberry Pi), this can take 1-2 ms per frame.
+**Why is this on the hot path and yet we use `to_vec()` and `from_raw()`?** This is a valid concern. The `frame.to_vec()` call clones the entire camera frame — approximately 2.76 MB for a \\( 1280 \times 720 \\) RGB frame. On a CPU with limited RAM bandwidth (Raspberry Pi), this can take 1-2 ms per frame.
 
 The optimization path: pre-allocate a buffer at startup and reuse it for each frame, avoiding the `to_vec()` clone. This is tracked as an optimization item in the repository's performance budget.
 
@@ -208,7 +208,7 @@ Total: ~25 ms, within the 33 ms budget at 30 FPS.
 
 The `AnchorGrid::decode()` method transforms the raw output tensor into bounding boxes. The key insight is that the output tensor is laid out as `[1, 11, 8400]` for our 7-class model, where each of the 8400 anchor points has 11 channels of data:
 
-- Channels 0-3: box coordinates $(t_x, t_y, t_w, t_h)$ (raw logits).
+- Channels 0-3: box coordinates \\( (t_x, t_y, t_w, t_h) \\) (raw logits).
 - Channels 4-10: class logits.
 
 ```rust
@@ -295,7 +295,7 @@ fn non_max_suppression(mut candidates: Vec<BBox>, iou_threshold: f32) -> Vec<BBo
 }
 ```
 
-**Performance note**: NMS is $O(n^2)$ in the number of candidates after confidence filtering. For typical traffic scenes, we have 50-200 candidates, so NMS runs in <0.1 ms. If you have 500+ candidates (congested scenes), consider the `torchvision::ops::nms()` equivalent or a more efficient NMS algorithm.
+**Performance note**: NMS is \\( O(n^2) \\) in the number of candidates after confidence filtering. For typical traffic scenes, we have 50-200 candidates, so NMS runs in <0.1 ms. If you have 500+ candidates (congested scenes), consider the `torchvision::ops::nms()` equivalent or a more efficient NMS algorithm.
 
 ## 8.7 Graceful Degradation and Error Handling
 

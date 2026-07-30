@@ -109,7 +109,7 @@ fn apply_matches(&mut self, detections: &[Detection], matches: &[(usize, usize, 
 }
 ```
 
-**Why greedy and not Hungarian?** The Hungarian algorithm (also called the Munkres algorithm) finds the optimal assignment that minimizes the total cost. Greedy assignment picks the best match first, then the next best, etc. Greedy is $O(n^2)$ and Hungarian is $O(n^3)$. For < 50 detections per frame, the difference is negligible, and greedy produces near-optimal results for well-separated objects.
+**Why greedy and not Hungarian?** The Hungarian algorithm (also called the Munkres algorithm) finds the optimal assignment that minimizes the total cost. Greedy assignment picks the best match first, then the next best, etc. Greedy is \\( O(n^2) \\) and Hungarian is \\( O(n^3) \\). For < 50 detections per frame, the difference is negligible, and greedy produces near-optimal results for well-separated objects.
 
 The IoU gating threshold (0.3) rejects matches where the predicted track and detection have less than 30% overlap. This prevents a track from jumping to a completely different object that happens to be nearby.
 

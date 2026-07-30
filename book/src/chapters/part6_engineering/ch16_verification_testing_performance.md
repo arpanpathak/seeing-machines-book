@@ -4,7 +4,7 @@
 
 The CivicSense coding standards define six formal verification properties that every PR must satisfy:
 
-1. **Complexity proof**: Worst-case time complexity must be documented and verified not to be $O(n^2)$ due to hidden nested iteration.
+1. **Complexity proof**: Worst-case time complexity must be documented and verified not to be \\( O(n^2) \\) due to hidden nested iteration.
 2. **Null-safety proof**: Every nullable type must be traced; no `!!` or forced unwrap.
 3. **Async liveness**: Every I/O call must have a timeout; parents must know if child tasks panic.
 4. **Lazy termination**: Every iterator/generator must have a documented terminal operator.
@@ -108,8 +108,8 @@ The `compute_iou` function should satisfy:
 
 - **Symmetry**: $IoU(A, B) = IoU(B, A)$
 - **Reflexivity**: $IoU(A, A) = 1.0$
-- **Non-negativity**: $IoU(A, B) \geq 0.0$
-- **Boundedness**: $IoU(A, B) \leq 1.0$
+- **Non-negativity**: \\( IoU(A, B) \geq 0.0 \\)
+- **Boundedness**: \\( IoU(A, B) \leq 1.0 \\)
 
 Example-based tests verify these for specific cases. Property-based tests verify them for random cases:
 

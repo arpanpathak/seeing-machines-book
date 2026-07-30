@@ -96,9 +96,9 @@ The threading configuration balances latency and throughput:
 
 The ONNX Runtime pre-allocates memory for all intermediate tensors during session initialization. This eliminates allocation during inference. The memory footprint is approximately:
 
-- Input tensor: $1 \times 3 \times 640 \times 640 \times 4 \text{ bytes} = 4.9 \text{ MB}$
+- Input tensor: \\( 1 \times 3 \times 640 \times 640 \times 4 \text{ bytes} = 4.9 \text{ MB} \\)
 - Feature maps (peak): ~15 MB (varies by model architecture)
-- Output tensor: $1 \times 11 \times 8400 \times 4 \text{ bytes} = 0.37 \text{ MB}$
+- Output tensor: \\( 1 \times 11 \times 8400 \times 4 \text{ bytes} = 0.37 \text{ MB} \\)
 - **Total inference memory**: ~25 MB
 
 This fits comfortably within the Pi 5's 8 GB (or even the 2 GB variant with reduced model size).

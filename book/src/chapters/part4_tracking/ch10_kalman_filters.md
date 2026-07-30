@@ -23,22 +23,22 @@ The result: a smooth, filtered trajectory that is more accurate than either the 
 
 We model each tracked object with an 8-dimensional state vector:
 
-$$\mathbf{x} = [c_x, c_y, w, h, v_x, v_y, v_w, v_h]^T$$
+\\[\mathbf{x} = [c_x, c_y, w, h, v_x, v_y, v_w, v_h]^T\\]
 
 where:
-- $(c_x, c_y)$ is the bounding box center in pixels.
+- \\( (c_x, c_y) \\) is the bounding box center in pixels.
 - $(w, h)$ is the width and height in pixels.
-- $(v_x, v_y, v_w, v_h)$ are the velocities (rate of change per frame).
+- \\( (v_x, v_y, v_w, v_h) \\) are the velocities (rate of change per frame).
 
 The state evolves according to a linear **process model**:
 
-$$\mathbf{x}_t = \mathbf{F} \cdot \mathbf{x}_{t-1} + \mathbf{w}_t$$
+\\[\mathbf{x}_t = \mathbf{F} \cdot \mathbf{x}_{t-1} + \mathbf{w}_t\\]
 
-where $\mathbf{F}$ is the state transition matrix and $\mathbf{w}_t \sim \mathcal{N}(0, \mathbf{Q})$ is process noise.
+where \\( \mathbf{F} \\) is the state transition matrix and \\( \mathbf{w}_t \sim \mathcal{N}(0, \mathbf{Q}) \\) is process noise.
 
 For a constant-velocity model (the default in CivicSense and Deep SORT):
 
-$$\mathbf{F} = \begin{bmatrix}
+\\[\mathbf{F} = \begin{bmatrix}
 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 \\
 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 \\
@@ -47,7 +47,7 @@ $$\mathbf{F} = \begin{bmatrix}
 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
-\end{bmatrix}$$
+\end{bmatrix}\\]
 
 This matrix says: the new position = old position + velocity (dt = 1 frame). The new velocity = old velocity (constant velocity assumption).
 
@@ -55,22 +55,22 @@ This matrix says: the new position = old position + velocity (dt = 1 frame). The
 
 The measurement (YOLO detection) is a 4-element vector:
 
-$$\mathbf{z} = [c_x, c_y, w, h]^T$$
+\\[\mathbf{z} = [c_x, c_y, w, h]^T\\]
 
 The measurement model relates the state to the measurement:
 
-$$\mathbf{z}_t = \mathbf{H} \cdot \mathbf{x}_t + \mathbf{v}_t$$
+\\[\mathbf{z}_t = \mathbf{H} \cdot \mathbf{x}_t + \mathbf{v}_t\\]
 
-where $\mathbf{H}$ extracts the position components (first 4 elements) from the state:
+where \\( \mathbf{H} \\) extracts the position components (first 4 elements) from the state:
 
-$$\mathbf{H} = \begin{bmatrix}
+\\[\mathbf{H} = \begin{bmatrix}
 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0
-\end{bmatrix}$$
+\end{bmatrix}\\]
 
-And $\mathbf{v}_t \sim \mathcal{N}(0, \mathbf{R})$ is measurement noise.
+And \\( \mathbf{v}_t \sim \mathcal{N}(0, \mathbf{R}) \\) is measurement noise.
 
 ### 10.2.3 The Full Kalman Equations
 
@@ -78,45 +78,45 @@ The Kalman filter proceeds in two steps at each frame:
 
 **Predict step:**
 
-$$\hat{\mathbf{x}}_{t|t-1} = \mathbf{F} \cdot \hat{\mathbf{x}}_{t-1|t-1}$$
+\\[\hat{\mathbf{x}}_{t|t-1} = \mathbf{F} \cdot \hat{\mathbf{x}}_{t-1|t-1}\\]
 
-$$\mathbf{P}_{t|t-1} = \mathbf{F} \cdot \mathbf{P}_{t-1|t-1} \cdot \mathbf{F}^T + \mathbf{Q}$$
+\\[\mathbf{P}_{t|t-1} = \mathbf{F} \cdot \mathbf{P}_{t-1|t-1} \cdot \mathbf{F}^T + \mathbf{Q}\\]
 
-Where $\mathbf{P}$ is the state covariance matrix — our uncertainty about the state. The predict step increases uncertainty (adds $\mathbf{Q}$).
+Where \\( \mathbf{P} \\) is the state covariance matrix — our uncertainty about the state. The predict step increases uncertainty (adds \\( \mathbf{Q} \\)).
 
 **Update step:**
 
-$$\mathbf{K}_t = \mathbf{P}_{t|t-1} \cdot \mathbf{H}^T \cdot (\mathbf{H} \cdot \mathbf{P}_{t|t-1} \cdot \mathbf{H}^T + \mathbf{R})^{-1}$$
+\\[\mathbf{K}_t = \mathbf{P}_{t|t-1} \cdot \mathbf{H}^T \cdot (\mathbf{H} \cdot \mathbf{P}_{t|t-1} \cdot \mathbf{H}^T + \mathbf{R})^{-1}\\]
 
-$$\hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} + \mathbf{K}_t \cdot (\mathbf{z}_t - \mathbf{H} \cdot \hat{\mathbf{x}}_{t|t-1})$$
+\\[\hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} + \mathbf{K}_t \cdot (\mathbf{z}_t - \mathbf{H} \cdot \hat{\mathbf{x}}_{t|t-1})\\]
 
-$$\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t \cdot \mathbf{H}) \cdot \mathbf{P}_{t|t-1}$$
+\\[\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t \cdot \mathbf{H}) \cdot \mathbf{P}_{t|t-1}\\]
 
-Where $\mathbf{K}_t$ is the **Kalman gain** — it determines how much we trust the measurement vs the prediction:
-- If measurement noise $\mathbf{R}$ is large, $\mathbf{K}_t$ is small, and we trust the prediction more.
-- If process noise $\mathbf{Q}$ is large (our model is uncertain), $\mathbf{K}_t$ is larger, and we trust the measurement more.
+Where \\( \mathbf{K}_t \\) is the **Kalman gain** — it determines how much we trust the measurement vs the prediction:
+- If measurement noise \\( \mathbf{R} \\) is large, \\( \mathbf{K}_t \\) is small, and we trust the prediction more.
+- If process noise \\( \mathbf{Q} \\) is large (our model is uncertain), \\( \mathbf{K}_t \\) is larger, and we trust the measurement more.
 
 ### 10.2.4 The Scalar-Gain Approximation
 
-The full Kalman update requires inverting a $4 \times 4$ matrix $(\mathbf{H}\mathbf{P}\mathbf{H}^T + \mathbf{R})$. On edge hardware, this inversion is expensive and can introduce numerical instability.
+The full Kalman update requires inverting a \\( 4 \times 4 \\) matrix \\( (\mathbf{H}\mathbf{P}\mathbf{H}^T + \mathbf{R}) \\). On edge hardware, this inversion is expensive and can introduce numerical instability.
 
 The CivicSense Kalman filter uses a **scalar-gain approximation**: instead of computing the full Kalman gain matrix, we update each state dimension independently:
 
 **Innovation:**
 
-$$y_i = z_i - H_i \cdot \mathbf{x} \quad \text{for } i = 0, 1, 2, 3$$
+\\[y_i = z_i - H_i \cdot \mathbf{x} \quad \text{for } i = 0, 1, 2, 3\\]
 
 **Scalar gain:**
 
-$$K_i = \frac{P_{i,i}}{P_{i,i} + R} \quad \text{for } i = 0, 1, 2, 3$$
+\\[K_i = \frac{P_{i,i}}{P_{i,i} + R} \quad \text{for } i = 0, 1, 2, 3\\]
 
 **Update:**
 
-$$x_i \leftarrow x_i + K_i \cdot y_i$$
+\\[x_i \leftarrow x_i + K_i \cdot y_i\\]
 
-$$P_{i,i} \leftarrow (1 - K_i) \cdot P_{i,i}$$
+\\[P_{i,i} \leftarrow (1 - K_i) \cdot P_{i,i}\\]
 
-This approximation assumes the state variables are uncorrelated (off-diagonal covariances are zero). In practice, bounding box center $(c_x, c_y)$ and dimensions $(w, h)$ are approximately independent for typical traffic scenes, so the approximation is good.
+This approximation assumes the state variables are uncorrelated (off-diagonal covariances are zero). In practice, bounding box center \\( (c_x, c_y) \\) and dimensions $(w, h)$ are approximately independent for typical traffic scenes, so the approximation is good.
 
 ## 10.3 The Rust Implementation
 
@@ -132,7 +132,7 @@ struct KalmanFilter {
 }
 ```
 
-Note: we store the full $8 \times 8$ matrix (64 elements) as a flat array for cache efficiency. The $n \times n$ matrix stored row-major means element $(i,j)$ is at index $i \times n + j$. The diagonal element $P_{i,i}$ is at index $i \times 9$ (since $i \times 8 + i = i \times 9$).
+Note: we store the full \\( 8 \times 8 \\) matrix (64 elements) as a flat array for cache efficiency. The \\( n \times n \\) matrix stored row-major means element $(i,j)$ is at index \\( i \times n + j \\). The diagonal element \\( P_{i,i} \\) is at index \\( i \times 9 \\) (since \\( i \times 8 + i = i \times 9 \\)).
 
 ### 10.3.2 Initialization
 
@@ -180,7 +180,7 @@ fn predict(&mut self) {
 
 The predict step:
 1. Adds velocity to position (constant-velocity model). Note: dt is implicitly 1 frame. A full implementation would multiply velocity by the actual time delta.
-2. Increases covariance by the process noise $\mathbf{Q}$. This represents the uncertainty added by our simplified motion model — vehicles can accelerate, brake, or turn, and our constant-velocity model cannot capture that.
+2. Increases covariance by the process noise \\( \mathbf{Q} \\). This represents the uncertainty added by our simplified motion model — vehicles can accelerate, brake, or turn, and our constant-velocity model cannot capture that.
 
 ### 10.3.4 Update
 
@@ -236,11 +236,11 @@ The current implementation uses a single R_VAR for all detections. An adaptive v
 
 ### P_INIT: Initial Covariance (Default: 10.0)
 
-Controls how uncertain we are about a new track's state. Higher values = faster initial adaptation but more jitter in the first few frames. The default 10.0 means the initial position uncertainty is ~3 pixels (standard deviation = $\sqrt{10.0} \approx 3.2$ px), which is reasonable for a new detection.
+Controls how uncertain we are about a new track's state. Higher values = faster initial adaptation but more jitter in the first few frames. The default 10.0 means the initial position uncertainty is ~3 pixels (standard deviation = \\( \sqrt{10.0} \approx 3.2 \\) px), which is reasonable for a new detection.
 
 ## 10.5 Numerical Stability Considerations
 
-The Kalman filter is famous for numerical instability in its naive form. The covariance matrix $\mathbf{P}$ must remain symmetric positive-definite. Due to floating-point arithmetic, it can drift into asymmetry or lose positive definiteness over time.
+The Kalman filter is famous for numerical instability in its naive form. The covariance matrix \\( \mathbf{P} \\) must remain symmetric positive-definite. Due to floating-point arithmetic, it can drift into asymmetry or lose positive definiteness over time.
 
 The CivicSense implementation avoids these issues through the scalar-gain approximation (which only operates on the diagonal) and the use of `f32` (which, while less precise than `f64`, is sufficient for pixel-level tracking and avoids the larger memory footprint).
 
@@ -307,7 +307,7 @@ The `predict()` is called for every track at the start of each frame (before ass
 
 ## 10.7 Exercises
 
-1. **Implement the full matrix Kalman filter.** Replace the scalar-gain approximation with the full Kalman gain computation (including the $4 \times 4$ matrix inversion). Compare tracking accuracy and latency against the scalar version on a benchmark dataset.
+1. **Implement the full matrix Kalman filter.** Replace the scalar-gain approximation with the full Kalman gain computation (including the \\( 4 \times 4 \\) matrix inversion). Compare tracking accuracy and latency against the scalar version on a benchmark dataset.
 
 2. **Kalman filter visualization.** Track a single object through 100 frames of a video. Plot the predicted vs measured vs filtered trajectory for each coordinate. The filtered trajectory should be smoother than both.
 

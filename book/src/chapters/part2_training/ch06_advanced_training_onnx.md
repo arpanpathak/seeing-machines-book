@@ -53,7 +53,7 @@ An ONNX file is a protobuf binary containing:
 2. **Weight tensors** — All learned parameters (convolution weights, BN parameters, biases).
 3. **Input/output specifications** — Tensor names, shapes, data types.
 
-For the CivicSense YOLO model, the input is `images` (float32, $\text{batch} \times 3 \times 640 \times 640$) and the output is a single tensor of shape $\text{batch} \times 11 \times 8400$ (11 channels: 4 box coords + 7 class logits, one per anchor).
+For the CivicSense YOLO model, the input is `images` (float32, \\( \text{batch} \times 3 \times 640 \times 640 \\)) and the output is a single tensor of shape \\( \text{batch} \times 11 \times 8400 \\) (11 channels: 4 box coords + 7 class logits, one per anchor).
 
 ### 6.2.3 Verifying the ONNX Export
 
@@ -100,9 +100,9 @@ A YOLOv11n model in FP32 is approximately 5.5 MB. In INT8, it is ~1.4 MB. The 4x
 
 ### 6.3.1 How Quantization Works
 
-Quantization maps a range of floating-point values $[r_{\min}, r_{\max}]$ to integer values $[0, 255]$:
+Quantization maps a range of floating-point values \\( [r_{\min}, r_{\max}] \\) to integer values $[0, 255]$:
 
-$$r = S \cdot (q - Z)$$
+\\[r = S \cdot (q - Z)\\]
 
 where:
 - $r$ is the real (float) value.
@@ -180,7 +180,7 @@ civicsense train validate --model runs/train/civicsense/weights/best.onnx
 civicsense train validate --model runs/train/civicsense/weights/best-int8.onnx
 ```
 
-Compare the output tensors for the same input. A root-mean-square error (RMSE) below $5 \times 10^{-3}$ across all 8400 anchors indicates a successful quantization.
+Compare the output tensors for the same input. A root-mean-square error (RMSE) below \\( 5 \times 10^{-3} \\) across all 8400 anchors indicates a successful quantization.
 
 ## 6.5 Model Optimization: Beyond Quantization
 
