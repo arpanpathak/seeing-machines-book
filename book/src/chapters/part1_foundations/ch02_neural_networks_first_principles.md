@@ -208,7 +208,7 @@ The loss function quantifies "how wrong" the network's prediction is. For object
 
 For a multi-class classification problem with \(C\) classes:
 
-\\[\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(\hat{y}_{i,c})\\]
+\\[\mathcal{L} = -\frac_{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(\hat{y}_{i,c})\\]
 
 where \\( y_{i,c} \\) is 1 if sample \(i\) belongs to class \(c\) (0 otherwise), and \\( \hat{y}_{i,c} \\) is the predicted probability.
 

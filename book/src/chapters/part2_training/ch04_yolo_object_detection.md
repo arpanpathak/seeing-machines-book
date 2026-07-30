@@ -165,7 +165,7 @@ where:
 - \\( \text{IoU} \\) is the Intersection-over-Union.
 - \\( \rho \\) is the Euclidean distance between box centers \\( \mathbf{b} \\) and \\( \mathbf{b}^{\text{gt}} \\).
 - \(c\) is the diagonal length of the smallest enclosing box.
-- \(v\) measures the consistency of aspect ratios: \\( \frac{4}{\pi^2}(\arctan\frac{w^{\text{gt}}}{h^{\text{gt}}} - \arctan\frac{w}{h})^2 \\).
+- \(v\) measures the consistency of aspect ratios: \\( \frac_{4}{\pi^2}(\arctan\frac{w^{\text{gt}}}{h^{\text{gt}}} - \arctan\frac{w}{h})^2 \\).
 - \\( \alpha = \frac{v}{(1 - \text{IoU}) + v} \\) is a tradeoff parameter.
 
 CIoU is superior to L1 or L2 loss because:

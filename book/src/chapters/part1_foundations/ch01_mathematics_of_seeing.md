@@ -106,7 +106,7 @@ When you train a YOLO model, the loss function is a weighted sum of three terms:
 
 The sigmoid function appears everywhere in detection:
 
-\\[\sigma(x) = \frac{1}{1 + e^{-x}}\\]
+\\[\sigma(x) = \frac_{1}{1 + e^{-x}}\\]
 
 Its derivative is elegant:
 
@@ -229,7 +229,7 @@ In the default CivicSense config, `focal_length = 650.0`. This is not a physical
 
 For a typical dashcam with a 3.7 mm lens and a 1/2.3" sensor (6.17 mm wide) capturing 1280-pixel-wide images:
 
-\\[f_{\text{pixels}} = 3.7 \cdot \frac{1280}{6.17} \approx 767\\]
+\\[f_{\text{pixels}} = 3.7 \cdot \frac_{1280}{6.17} \approx 767\\]
 
 The default 650 is a reasonable approximation for a slightly wider-angle lens. In production, you calibrate this using a checkerboard pattern or manufacturer specifications.
 
