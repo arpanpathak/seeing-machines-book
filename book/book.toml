@@ -7,8 +7,9 @@ description = "Building Production-Grade Vision Systems with Typed Python and Id
 [output.html]
 smart-punctuation = true
 no-section-label = true
-git-repository-url = "https://github.com/arpanpathak/driving-civicsense-vision-model"
-edit-url-template = "https://github.com/arpanpathak/driving-civicsense-vision-model/edit/main/book/{path}"
+site-url = "https://arpanpathak.github.io/seeing-machines-book/"
+git-repository-url = "https://github.com/arpanpathak/seeing-machines-book"
+edit-url-template = "https://github.com/arpanpathak/seeing-machines-book/edit/main/book/src/{path}"
 
 [output.html.print]
 page-height = "279mm"
