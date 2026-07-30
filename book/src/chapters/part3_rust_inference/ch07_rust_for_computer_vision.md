@@ -4,11 +4,11 @@
 
 Computer vision at the edge sits at an uncomfortable intersection of requirements. It must be:
 
-- **Fast** — 30 FPS inference on a device with 4 ARM cores and no GPU.
-- **Memory-safe** — No segfaults, buffer overflows, or use-after-free errors (the device is in a moving car; crashes are not acceptable).
-- **Predictable** — No garbage collection pauses, no interpreter stalls, no JIT compilation hiccups.
-- **Portable** — Cross-compile from a Mac development machine to a Raspberry Pi with an ARM CPU.
-- **Low-power** — Every milliwatt counts on a device running off a car's USB port.
+- **Fast**  -  30 FPS inference on a device with 4 ARM cores and no GPU.
+- **Memory-safe**  -  No segfaults, buffer overflows, or use-after-free errors (the device is in a moving car; crashes are not acceptable).
+- **Predictable**  -  No garbage collection pauses, no interpreter stalls, no JIT compilation hiccups.
+- **Portable**  -  Cross-compile from a Mac development machine to a Raspberry Pi with an ARM CPU.
+- **Low-power**  -  Every milliwatt counts on a device running off a car's USB port.
 
 Python fails on all counts for the inference side. C++ meets most but fails catastrophically on memory safety. Rust meets all of them, and that is why CivicSense uses Rust for its inference engine.
 
@@ -18,15 +18,15 @@ Python is the undisputed king of training. The ecosystem (PyTorch, TensorFlow, J
 
 But Python at inference time on edge hardware is a disaster:
 
-- **The GIL** — The Global Interpreter Lock prevents true parallelism. Two CPU-bound threads cannot execute Python bytecode simultaneously. On a 4-core Cortex-A72 (Raspberry Pi 5), Python uses one core for model inference while the other three are idle.
+- **The GIL**  -  The Global Interpreter Lock prevents true parallelism. Two CPU-bound threads cannot execute Python bytecode simultaneously. On a 4-core Cortex-A72 (Raspberry Pi 5), Python uses one core for model inference while the other three are idle.
 
-- **Memory overhead** — Python objects carry significant overhead. An integer in Python is 28 bytes (vs 4 bytes in C/Rust). A list of 8400 bounding boxes consumes ~500 KB in Rust vs ~5 MB in Python. On a device with 512 MB of RAM, this matters.
+- **Memory overhead**  -  Python objects carry significant overhead. An integer in Python is 28 bytes (vs 4 bytes in C/Rust). A list of 8400 bounding boxes consumes ~500 KB in Rust vs ~5 MB in Python. On a device with 512 MB of RAM, this matters.
 
-- **No predictable latency** — Python's garbage collector can pause execution for 10-100 ms at any time. At 30 FPS, each frame has 33 ms to process. A GC pause blows the entire frame budget.
+- **No predictable latency**  -  Python's garbage collector can pause execution for 10-100 ms at any time. At 30 FPS, each frame has 33 ms to process. A GC pause blows the entire frame budget.
 
-- **Cross-compilation nightmare** — Cross-compiling CPython for an ARM target is an exercise in suffering. Installing `numpy`, `opencv-python`, and `onnxruntime` on a Raspberry Pi Zero (ARMv6) ranges from "slow" to "impossible."
+- **Cross-compilation nightmare**  -  Cross-compiling CPython for an ARM target is an exercise in suffering. Installing `numpy`, `opencv-python`, and `onnxruntime` on a Raspberry Pi Zero (ARMv6) ranges from "slow" to "impossible."
 
-- **Cold start problem** — The Python interpreter takes 200-500 ms to import all dependencies. For an always-on dashcam this is irrelevant, but for intermittent use (smart glasses waking on demand), every millisecond counts.
+- **Cold start problem**  -  The Python interpreter takes 200-500 ms to import all dependencies. For an always-on dashcam this is irrelevant, but for intermittent use (smart glasses waking on demand), every millisecond counts.
 
 Rust solves all of these problems without requiring you to write unsafe code.
 
@@ -57,7 +57,7 @@ Rust's borrow checker guarantees that:
 
 These guarantees are enforced at compile time. A CivicSense binary that compiles will not segfault. Period.
 
-In the edge context, this is transformative. A crash at 70 mph on a highway is not a bug report — it is a safety incident. Rust eliminates an entire class of safety-critical bugs.
+In the edge context, this is transformative. A crash at 70 mph on a highway is not a bug report  -  it is a safety incident. Rust eliminates an entire class of safety-critical bugs.
 
 ### 7.2.3 Fearless Concurrency
 
@@ -111,7 +111,7 @@ impl Confidence {
 }
 ```
 
-Any function that takes a `Confidence` value can rely on it being valid — the type system enforces the invariant at construction time. This pattern (newtypes with validation) is used throughout the CivicSense codebase for normalized coordinates, pixel dimensions, and speed values.
+Any function that takes a `Confidence` value can rely on it being valid  -  the type system enforces the invariant at construction time. This pattern (newtypes with validation) is used throughout the CivicSense codebase for normalized coordinates, pixel dimensions, and speed values.
 
 ## 7.3 Rust's Place in the CV Ecosystem
 
@@ -176,7 +176,7 @@ This structure follows the SOLID principles from the coding standards:
 
 - **Open/Closed**: The `ObjectDetector` trait (in `detection/mod.rs`) defines an interface that can be implemented by ONNX, TensorRT, or CoreML backends without modifying the pipeline code.
 
-- **Liskov Substitution**: The `Track` struct and `KalmanFilter` struct are separate — you can swap the Kalman filter for a particle filter without changing the tracker logic.
+- **Liskov Substitution**: The `Track` struct and `KalmanFilter` struct are separate  -  you can swap the Kalman filter for a particle filter without changing the tracker logic.
 
 - **Interface Segregation**: The `modules` trait defines only the `analyze()` method. Modules do not depend on each other's internal state.
 
@@ -194,15 +194,15 @@ CivicSense's target hardware includes the Raspberry Pi 5 (4 Cortex-A76 cores, 8 
 Rust is the only language that can deliver:
 
 1. **30 FPS inference** on a 4-core ARM CPU with Python-level developer productivity.
-2. **Deterministic latency** — no GC pauses, no JIT warmup.
-3. **Cross-compilation from macOS** — `cargo build --target aarch64-unknown-linux-gnu` produces a binary that runs on the Pi 5.
-4. **Binary size under 5 MB** — the entire CivicSense binary, including the ONNX Runtime link, is approximately 4.2 MB stripped. This fits on a small boot partition and loads instantly.
+2. **Deterministic latency**  -  no GC pauses, no JIT warmup.
+3. **Cross-compilation from macOS**  -  `cargo build --target aarch64-unknown-linux-gnu` produces a binary that runs on the Pi 5.
+4. **Binary size under 5 MB**  -  the entire CivicSense binary, including the ONNX Runtime link, is approximately 4.2 MB stripped. This fits on a small boot partition and loads instantly.
 
 ## 7.6 Exercises
 
 1. **Borrow checker training.** Take a Python function that modifies a list of bounding boxes in place. Re-implement it in Rust. Experience the borrow checker's error messages, then fix them. This is a rite of passage.
 
-2. **Newtype practice.** Create a `NormalizedCoordinate` newtype that wraps an `f32` and validates $[0, 1]$ at construction. Implement `From<f32>` and `Into<f32>` for it.
+2. **Newtype practice.** Create a `NormalizedCoordinate` newtype that wraps an `f32` and validates \([0, 1]\) at construction. Implement `From<f32>` and `Into<f32>` for it.
 
 3. **Cross-compilation setup.** Install the `aarch64-unknown-linux-gnu` target and a cross-linker. Build the CivicSense binary for ARM64. Copy it to a Raspberry Pi (or QEMU emulator) and verify it runs.
 
@@ -216,4 +216,4 @@ Rust is the only language that can deliver:
 - The type system can encode domain invariants (normalized coordinates, confidence scores) that prevent bugs at compile time.
 - Cross-compilation from macOS to ARM Linux is a first-class Cargo feature, not an afterthought.
 
-In Chapter 8, we build the actual inference engine — loading the ONNX model, running it on camera frames, and decoding the output into actionable detections.
+In Chapter 8, we build the actual inference engine  -  loading the ONNX model, running it on camera frames, and decoding the output into actionable detections.

@@ -2,7 +2,7 @@
 
 > *"The model is the specification. The inference engine is the implementation."*
 
-The inference engine is where the neural network meets the real world. It takes raw bytes from a camera sensor and produces structured detections that the rest of the pipeline can act on. This chapter examines the CivicSense inference engine — `YoloDetector` in `src/detection/yolo.rs` — in complete detail.
+The inference engine is where the neural network meets the real world. It takes raw bytes from a camera sensor and produces structured detections that the rest of the pipeline can act on. This chapter examines the CivicSense inference engine  -  `YoloDetector` in `src/detection/yolo.rs`  -  in complete detail.
 
 Every line of this code has been shaped by real hardware constraints: the model must run within a 25 ms budget on a 4-core ARM CPU while sharing memory with a Kalman filter tracker, an intersection analyzer, and a visualization module.
 
@@ -29,7 +29,7 @@ impl YoloDetector {
 }
 ```
 
-The `session` is `Option` because the model file may not exist during development. This is not an error — it allows the pipeline to be tested for integration and data collection before a model is trained. The `detect()` method returns an empty `Vec` when no model is loaded.
+The `session` is `Option` because the model file may not exist during development. This is not an error  -  it allows the pipeline to be tested for integration and data collection before a model is trained. The `detect()` method returns an empty `Vec` when no model is loaded.
 
 **Why `&mut self`?** The ONNX Runtime session is not mutated during inference (it is read-only), but the `ort` crate's API requires `&mut` for the `run()` method. This is a quirk of the Rust bindings, not a conceptual requirement. In the future, interior mutability (`RefCell` or `Mutex`) could make the interface shared.
 
@@ -78,7 +78,7 @@ Before the model can process a frame, the frame must be transformed into the for
 
 1. **Resize** while preserving aspect ratio (letterbox).
 2. **Pad** with gray pixels (value 114/255 = 0.447).
-3. **Normalize** from $[0, 255]$ to $[0, 1]$.
+3. **Normalize** from \([0, 255]\) to \([0, 1]\).
 4. **Rearrange** from HWC (Height-Width-Channel) to CHW (Channel-Height-Width).
 
 ```rust
@@ -119,11 +119,11 @@ fn letterbox(
 }
 ```
 
-**Why is this on the hot path and yet we use `to_vec()` and `from_raw()`?** This is a valid concern. The `frame.to_vec()` call clones the entire camera frame — approximately 2.76 MB for a \\( 1280 \times 720 \\) RGB frame. On a CPU with limited RAM bandwidth (Raspberry Pi), this can take 1-2 ms per frame.
+**Why is this on the hot path and yet we use `to_vec()` and `from_raw()`?** This is a valid concern. The `frame.to_vec()` call clones the entire camera frame  -  approximately 2.76 MB for a \\( 1280 \times 720 \\) RGB frame. On a CPU with limited RAM bandwidth (Raspberry Pi), this can take 1-2 ms per frame.
 
 The optimization path: pre-allocate a buffer at startup and reuse it for each frame, avoiding the `to_vec()` clone. This is tracked as an optimization item in the repository's performance budget.
 
-**Why CatmullRom interpolation?** As discussed in Chapter 3, CatmullRom is a cubic interpolant that produces smoother results than bilinear interpolation, especially for fine details like text on stop signs. It is the default in the `image` crate and adds approximately 0.5 ms to pre-processing on a Pi 5 — acceptable for the 33 ms budget.
+**Why CatmullRom interpolation?** As discussed in Chapter 3, CatmullRom is a cubic interpolant that produces smoother results than bilinear interpolation, especially for fine details like text on stop signs. It is the default in the `image` crate and adds approximately 0.5 ms to pre-processing on a Pi 5  -  acceptable for the 33 ms budget.
 
 ## 8.4 Running the Model
 
@@ -256,7 +256,7 @@ fn decode(
 }
 ```
 
-**The tensor layout is critical to understand.** The output is NOT transposed — it is in channel-first order. This means for anchor index `i`:
+**The tensor layout is critical to understand.** The output is NOT transposed  -  it is in channel-first order. This means for anchor index `i`:
 - Box coordinate 0 (tx) is at `output[i]`
 - Box coordinate 1 (ty) is at `output[1 * stride + i]` where `stride = 8400`
 - Box coordinate 2 (tw) is at `output[2 * stride + i]`
@@ -380,4 +380,4 @@ The safety margin (38 ms budget vs 33 ms frame time) allows for occasional spike
 - Graceful degradation ensures the pipeline runs even without a model file (returns empty detections).
 - The latency budget is tight (33 ms/frame at 30 FPS). Each component must stay within its allocation.
 
-In Chapter 9, we examine the video processing infrastructure — how frames are captured from cameras, video files, and directories, and how the pipeline is orchestrated.
+In Chapter 9, we examine the video processing infrastructure  -  how frames are captured from cameras, video files, and directories, and how the pipeline is orchestrated.

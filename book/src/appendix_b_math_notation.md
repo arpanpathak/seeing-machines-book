@@ -1,4 +1,4 @@
-# Appendix B — Mathematical Notation Reference
+# Appendix B  -  Mathematical Notation Reference
 
 A quick reference for the mathematical notation used in this book.
 
@@ -7,10 +7,10 @@ A quick reference for the mathematical notation used in this book.
 | Symbol | Meaning |
 |--------|---------|
 | \\( \mathbb{R} \\) | Real numbers |
-| \\( \mathbb{R}^{n} \\) | $n$-dimensional real vector space |
+| \\( \mathbb{R}^{n} \\) | \(n\)-dimensional real vector space |
 | \\( \mathbb{R}^{m \times n} \\) | Space of \\( m \times n \\) real matrices |
-| $[a, b]$ | Closed interval (inclusive of endpoints) |
-| $(a, b)$ | Open interval (exclusive of endpoints) |
+| \([a, b]\) | Closed interval (inclusive of endpoints) |
+| \((a, b)\) | Open interval (exclusive of endpoints) |
 
 ## B.2 Vectors and Matrices
 
@@ -18,8 +18,8 @@ A quick reference for the mathematical notation used in this book.
 |--------|---------|
 | \\( \mathbf{x} \\) | Column vector (bold lowercase) |
 | \\( \mathbf{X} \\) | Matrix (bold uppercase) |
-| \\( \mathbf{x}_i \\) | The $i$-th element of vector \\( \mathbf{x} \\) |
-| \\( X_{i,j} \\) | Element at row $i$, column $j$ of matrix \\( \mathbf{X} \\) |
+| \\( \mathbf{x}_i \\) | The \(i\)-th element of vector \\( \mathbf{x} \\) |
+| \\( X_{i,j} \\) | Element at row \(i\), column \(j\) of matrix \\( \mathbf{X} \\) |
 | \\( \mathbf{x}^T \\) | Vector transpose (row vector) |
 | \\( \mathbf{X}^T \\) | Matrix transpose |
 | \\( \mathbf{I}_n \\) | \\( n \times n \\) identity matrix |
@@ -30,21 +30,21 @@ A quick reference for the mathematical notation used in this book.
 
 | Symbol | Meaning |
 |--------|---------|
-| \\( \frac{dy}{dx} \\) | Derivative of $y$ with respect to $x$ |
-| \\( \frac{\partial L}{\partial w} \\) | Partial derivative of $L$ with respect to $w$ |
-| \\( \nabla L \\) | Gradient vector of $L$ |
-| \\( \nabla_{\mathbf{W}} L \\) | Gradient of $L$ with respect to matrix \\( \mathbf{W} \\) |
+| \\( \frac{dy}{dx} \\) | Derivative of \(y\) with respect to \(x\) |
+| \\( \frac{\partial L}{\partial w} \\) | Partial derivative of \(L\) with respect to \(w\) |
+| \\( \nabla L \\) | Gradient vector of \(L\) |
+| \\( \nabla_{\mathbf{W}} L \\) | Gradient of \(L\) with respect to matrix \\( \mathbf{W} \\) |
 | \\( \sum_{i=1}^{n} a_i \\) | Summation: \\( a_1 + a_2 + \cdots + a_n \\) |
 
 ## B.4 Probability and Statistics
 
 | Symbol | Meaning |
 |--------|---------|
-| $P(A)$ | Probability of event $A$ |
-| \\( P(A \mid B) \\) | Probability of $A$ given $B$ |
-| \\( \mathbb{E}[X] \\) | Expected value of random variable $X$ |
+| \(P(A)\) | Probability of event \(A\) |
+| \\( P(A \mid B) \\) | Probability of \(A\) given \(B\) |
+| \\( \mathbb{E}[X] \\) | Expected value of random variable \(X\) |
 | \\( \mathcal{N}(\mu, \sigma^2) \\) | Normal (Gaussian) distribution with mean \\( \mu \\), variance \\( \sigma^2 \\) |
-| \\( \text{Cov}(X, Y) \\) | Covariance of $X$ and $Y$ |
+| \\( \text{Cov}(X, Y) \\) | Covariance of \(X\) and \(Y\) |
 | \\( \mathbf{P} \\) | Covariance matrix (in Kalman filter context) |
 
 ## B.5 Detection and Tracking
@@ -60,7 +60,7 @@ A quick reference for the mathematical notation used in this book.
 | \\( \mathbf{R} \\) | Measurement noise covariance |
 | \\( \mathbf{K} \\) | Kalman gain matrix |
 | \\( \sigma(x) \\) | Sigmoid function: \\( 1 / (1 + e^{-x}) \\) |
-| $c$ | Confidence score |
+| \(c\) | Confidence score |
 
 ## B.6 Convolution Notation
 
@@ -70,15 +70,15 @@ A quick reference for the mathematical notation used in this book.
 | \\( H_{\text{out}}, W_{\text{out}} \\) | Output height and width |
 | \\( C_{\text{in}}, C_{\text{out}} \\) | Input and output channels |
 | \\( K_h, K_w \\) | Kernel height and width |
-| $S$ | Stride |
-| $P$ | Padding |
+| \(S\) | Stride |
+| \(P\) | Padding |
 
 ## B.7 YOLO-Specific Notation
 
 | Symbol | Meaning |
 |--------|---------|
 | \\( g_x, g_y \\) | Grid cell coordinates (in grid-space) |
-| $s$ | Anchor stride (8, 16, or 32) |
+| \(s\) | Anchor stride (8, 16, or 32) |
 | \\( t_x, t_y, t_w, t_h \\) | Raw network outputs for box coordinates |
 | \\( \lambda_{\text{box}} \\) | Box loss weight (default 7.5) |
 | \\( \lambda_{\text{cls}} \\) | Class loss weight (default 0.5) |

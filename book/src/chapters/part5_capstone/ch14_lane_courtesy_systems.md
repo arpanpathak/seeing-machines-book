@@ -29,7 +29,7 @@ fn assign_lane(&self, bbox: &(f32, f32, f32, f32)) -> usize {
 ```
 
 For a 1280-pixel-wide frame:
-- Left lane: centroid $x < 427$
+- Left lane: centroid \(x < 427\)
 - Ego lane: \\( 427 \leq x < 853 \\)
 - Right lane: \\( x \geq 853 \\)
 
@@ -39,7 +39,7 @@ For a 1280-pixel-wide frame:
 
 The alert logic compares the speed of vehicles in the right lane to the ego lane. If the right lane is moving faster, the driver is impeding traffic by staying in the left lane. But if the assignment is wrong (e.g., the right lane's vehicles are actually in a turning lane), the alert is spurious.
 
-A more robust approach would use the **vanishing point** — the point where parallel lane lines appear to converge in the image. The vanishing point defines the horizon and the perspective structure of the road. The lane boundaries can then be estimated from the vanishing point plus assumed road geometry:
+A more robust approach would use the **vanishing point**  -  the point where parallel lane lines appear to converge in the image. The vanishing point defines the horizon and the perspective structure of the road. The lane boundaries can then be estimated from the vanishing point plus assumed road geometry:
 
 ```
 lane_center_v = image_height / 2  (assuming camera is level)
@@ -75,7 +75,7 @@ fn collect_lane_distances(&self, tracks: &[Track]) -> [Vec<f32>; 3] {
 
 Tracks with pixel width < 2 are skipped because the distance estimate becomes numerically unstable at sub-2-pixel sizes (a 1-pixel width change represents a 50% error in the distance).
 
-The distance is clamped to $[0.5, 200]$ meters. Below 0.5 m, the vehicle would be touching the camera (impossible in a forward-facing dashcam). Above 200 m, the pixel width is too small for reliable estimation.
+The distance is clamped to \([0.5, 200]\) meters. Below 0.5 m, the vehicle would be touching the camera (impossible in a forward-facing dashcam). Above 200 m, the pixel width is too small for reliable estimation.
 
 ### 14.2.2 Computing Lane Speed
 
@@ -158,7 +158,7 @@ let ego_lane_speed = if self.lanes[1].smoothed_speed.abs() > 0.1 {
 };
 ```
 
-This is critical. If the ego lane is empty, we cannot measure its speed from vehicle tracks. But we can compare the right lane's speed to the ego vehicle's speed. If the right lane is traveling at 55 mph and the ego vehicle is doing 35 mph, the right lane is clearly faster — even if the ego lane itself has no vehicles visible.
+This is critical. If the ego lane is empty, we cannot measure its speed from vehicle tracks. But we can compare the right lane's speed to the ego vehicle's speed. If the right lane is traveling at 55 mph and the ego vehicle is doing 35 mph, the right lane is clearly faster  -  even if the ego lane itself has no vehicles visible.
 
 ## 14.4 The LaneState Structure
 
@@ -263,6 +263,6 @@ The primary failure mode is **turning lane confusion**: when a right lane become
 - The low-pass filter (\\( \alpha = 0.3 \\)) smooths noisy speed estimates with ~3-frame response.
 - Hysteresis (3-second timer) prevents nuisance alerts from transient speed differentials.
 - The ego speed fallback (GPS/ODO speed) handles cases where the ego lane is empty.
-- The primary failure mode is turn-lane confusion — distinguishing through lanes from turn lanes requires additional classification.
+- The primary failure mode is turn-lane confusion  -  distinguishing through lanes from turn lanes requires additional classification.
 
-In Chapter 15, we take the entire CivicSense system and deploy it on real edge hardware — cross-compilation, performance tuning, and the integration test that validates the full stack.
+In Chapter 15, we take the entire CivicSense system and deploy it on real edge hardware  -  cross-compilation, performance tuning, and the integration test that validates the full stack.

@@ -1,14 +1,14 @@
 # Chapter 2: Neural Networks from First Principles
 
-> *"What I cannot create, I do not understand."* — Richard Feynman
+> *"What I cannot create, I do not understand."*  -  Richard Feynman
 
-There is a scene in every engineer's life where they realize that a neural network is not magic — it is just a very long chain of matrix multiplications with occasional nonlinearities, and the entire field of deep learning is about making that chain longer without breaking the gradient flow.
+There is a scene in every engineer's life where they realize that a neural network is not magic  -  it is just a very long chain of matrix multiplications with occasional nonlinearities, and the entire field of deep learning is about making that chain longer without breaking the gradient flow.
 
 This chapter is that realization.
 
 We are going to build a neural network from scratch in typed Python. No PyTorch. No TensorFlow. No autograd. Just `numpy` arrays, manual forward passes, manual backward passes, and the iron discipline of type annotations.
 
-When you finish this chapter, you will understand exactly what happens inside a `model.forward()` call — not because a tutorial told you the math, but because you wrote the math yourself and watched it converge.
+When you finish this chapter, you will understand exactly what happens inside a `model.forward()` call  -  not because a tutorial told you the math, but because you wrote the math yourself and watched it converge.
 
 ## 2.1 The Neuron: A Biological Metaphor That Is Technically Incorrect
 
@@ -18,9 +18,9 @@ An artificial neuron does something mathematically analogous but physiologically
 
 \\[y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right)\\]
 
-where \\( x_i \\) are inputs, \\( w_i \\) are weights, $b$ is a bias, and \\( \sigma \\) is a nonlinear activation function.
+where \\( x_i \\) are inputs, \\( w_i \\) are weights, \(b\) is a bias, and \\( \sigma \\) is a nonlinear activation function.
 
-The key insight — and the one that took AI research decades to internalize — is that **composition is the secret**. A single neuron can only learn a linear decision boundary (plus the sigmoid curve). But two layers of neurons can approximate any continuous function to arbitrary accuracy (the Universal Approximation Theorem). And deep networks (many layers) can do this with exponentially fewer parameters than shallow networks.
+The key insight  -  and the one that took AI research decades to internalize  -  is that **composition is the secret**. A single neuron can only learn a linear decision boundary (plus the sigmoid curve). But two layers of neurons can approximate any continuous function to arbitrary accuracy (the Universal Approximation Theorem). And deep networks (many layers) can do this with exponentially fewer parameters than shallow networks.
 
 This is not theoretical. When you look at the YOLO backbone in Chapter 4, it has approximately 70 layers of neurons. The first layers learn edges and textures. The middle layers learn object parts (wheels, windows, license plates). The final layers learn whole-object detectors. The composition of simple functions creates complex understanding.
 
@@ -51,11 +51,11 @@ def neuron_forward(
     return float(activation(np.array([z]))[0])
 ```
 
-This function is not useful in practice — real networks use vectorized operations across entire batches — but it illustrates the atomic unit of computation.
+This function is not useful in practice  -  real networks use vectorized operations across entire batches  -  but it illustrates the atomic unit of computation.
 
 ## 2.2 Building a Layer: Vectorization Is Performance
 
-A single neuron is slow. A **layer** of $m$ neurons, operating on a batch of $b$ inputs simultaneously, is fast — because GPUs and modern CPUs have SIMD units that perform matrix multiplication in hardware.
+A single neuron is slow. A **layer** of \(m\) neurons, operating on a batch of \(b\) inputs simultaneously, is fast  -  because GPUs and modern CPUs have SIMD units that perform matrix multiplication in hardware.
 
 A fully-connected (dense) layer performs:
 
@@ -134,7 +134,7 @@ class DenseLayer:
 
 ## 2.3 The Backward Pass: The Chain Rule, Materialized
 
-Forward propagation computes the output. Backpropagation computes the gradient of the loss with respect to every parameter. The key insight is that the gradient at each layer can be computed from the gradient at the next layer — the chain rule propagated backward.
+Forward propagation computes the output. Backpropagation computes the gradient of the loss with respect to every parameter. The key insight is that the gradient at each layer can be computed from the gradient at the next layer  -  the chain rule propagated backward.
 
 For a single dense layer \\( \mathbf{A} = \sigma(\mathbf{X}\mathbf{W}^T + \mathbf{b}) \\), the gradients are:
 
@@ -206,22 +206,22 @@ The loss function quantifies "how wrong" the network's prediction is. For object
 
 ### 2.4.1 Cross-Entropy Loss
 
-For a multi-class classification problem with $C$ classes:
+For a multi-class classification problem with \(C\) classes:
 
 \\[\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(\hat{y}_{i,c})\\]
 
-where \\( y_{i,c} \\) is 1 if sample $i$ belongs to class $c$ (0 otherwise), and \\( \hat{y}_{i,c} \\) is the predicted probability.
+where \\( y_{i,c} \\) is 1 if sample \(i\) belongs to class \(c\) (0 otherwise), and \\( \hat{y}_{i,c} \\) is the predicted probability.
 
 The gradient of cross-entropy with respect to the logits (input to softmax) has a beautiful closed form:
 
 \\[\frac{\partial \mathcal{L}}{\partial \mathbf{z}_i} = \hat{\mathbf{y}}_i - \mathbf{y}_i\\]
 
-That is: the gradient is simply the difference between the predicted probability distribution and the ground truth distribution. If the network predicts 0.9 for the correct class but the true label is 1.0, the gradient is $0.9 - 1.0 = -0.1$ (pushing the logit up). If it predicts 0.1 for the correct class, the gradient is $0.1 - 1.0 = -0.9$ (a stronger push).
+That is: the gradient is simply the difference between the predicted probability distribution and the ground truth distribution. If the network predicts 0.9 for the correct class but the true label is 1.0, the gradient is \(0.9 - 1.0 = -0.1\) (pushing the logit up). If it predicts 0.1 for the correct class, the gradient is \(0.1 - 1.0 = -0.9\) (a stronger push).
 
 ```python
 def cross_entropy_loss(
     logits: NDArray[np.float64],   # shape (batch_size, num_classes)
-    targets: NDArray[np.int64]     # shape (batch_size,)  — class indices
+    targets: NDArray[np.int64]     # shape (batch_size,)   -  class indices
 ) -> Tuple[float, NDArray[np.float64]]:
     """Compute cross-entropy loss and its gradient.
     
@@ -307,7 +307,7 @@ def train_step(
 
 ### 2.5.1 Why This Works: The Loss Landscape
 
-The loss function defines a surface in parameter space — an \\( (n_{\text{params}}) \\)-dimensional landscape where each point is a specific weight configuration and the height is the loss value. Gradient descent walks downhill on this landscape.
+The loss function defines a surface in parameter space  -  an \\( (n_{\text{params}}) \\)-dimensional landscape where each point is a specific weight configuration and the height is the loss value. Gradient descent walks downhill on this landscape.
 
 But here is the uncomfortable truth: for deep networks, this landscape is not a nice convex bowl. It is a rugged, high-dimensional terrain with:
 - **Local minima** that are often good enough (contrary to myth, local minima in deep nets are rare; saddle points are the real problem).
@@ -318,7 +318,7 @@ The fact that SGD navigates this landscape at all is a minor miracle, partially 
 
 ## 2.6 The Capstone Connection: From Toy Networks to YOLO
 
-The neural network you just built in this chapter — with its dense layers, sigmoid activations, cross-entropy loss, and SGD optimization — is the same fundamental machinery that drives YOLOv11, just scaled up by several orders of magnitude and augmented with specialized operations:
+The neural network you just built in this chapter  -  with its dense layers, sigmoid activations, cross-entropy loss, and SGD optimization  -  is the same fundamental machinery that drives YOLOv11, just scaled up by several orders of magnitude and augmented with specialized operations:
 
 | Your Implementation | YOLOv11 Equivalent | Purpose |
 |---------------------|-------------------|---------|
@@ -334,7 +334,7 @@ But the pipeline is identical:
 3. Backward pass to compute gradients.
 4. Update parameters.
 
-When you train a YOLO model in Chapter 5, you will not write the backward pass manually — PyTorch's autograd handles that. But you will understand what `loss.backward()` does because you have written it yourself. And when your model does not converge, you will debug the right thing: not "is the magic framework working?" but "is the gradient flowing through my architecture?"
+When you train a YOLO model in Chapter 5, you will not write the backward pass manually  -  PyTorch's autograd handles that. But you will understand what `loss.backward()` does because you have written it yourself. And when your model does not converge, you will debug the right thing: not "is the magic framework working?" but "is the gradient flowing through my architecture?"
 
 ## 2.7 Exercises
 
@@ -352,6 +352,6 @@ When you train a YOLO model in Chapter 5, you will not write the backward pass m
 - Backpropagation is the chain rule applied efficiently to compute gradients through a computation graph.
 - The gradient of cross-entropy loss with softmax is the simple difference \\( (\hat{y} - y) \\), which makes training numerically well-behaved.
 - Xavier initialization is essential for deep networks. Without it, gradients vanish or explode.
-- Type annotations in Python are not just documentation — they prevent shape-mismatch bugs that would otherwise silently produce wrong results.
+- Type annotations in Python are not just documentation  -  they prevent shape-mismatch bugs that would otherwise silently produce wrong results.
 
-In the next chapter, we generalize from dense layers to convolutional layers — the operation that made computer vision possible by exploiting spatial locality in images.
+In the next chapter, we generalize from dense layers to convolutional layers  -  the operation that made computer vision possible by exploiting spatial locality in images.

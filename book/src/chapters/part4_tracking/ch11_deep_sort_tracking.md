@@ -1,4 +1,4 @@
-# Chapter 11: Deep SORT — Tracking by Detection
+# Chapter 11: Deep SORT  -  Tracking by Detection
 
 > *"An object is not just a detection. It is a story that unfolds over time."*
 
@@ -13,7 +13,7 @@ Tracking-by-detection decouples the problem into two independent stages:
 1. **Detection**: Find all objects in the current frame (YOLO).
 2. **Association**: Match detections to existing tracks (Deep SORT).
 
-The advantage of this decoupling is modularity: you can swap the detector (YOLOv8, YOLOv11, etc.) without changing the tracker, and vice versa. The disadvantage is that the tracker cannot correct detection errors — if YOLO misses a vehicle for 3 frames, the track dies.
+The advantage of this decoupling is modularity: you can swap the detector (YOLOv8, YOLOv11, etc.) without changing the tracker, and vice versa. The disadvantage is that the tracker cannot correct detection errors  -  if YOLO misses a vehicle for 3 frames, the track dies.
 
 Deep SORT addresses this through:
 - **Motion prediction** (Kalman filter): predicts where each track will be in the next frame, bridging brief detection gaps.
@@ -141,7 +141,7 @@ fn confirm_tracks(&mut self) {
 }
 ```
 
-Confirmed tracks are returned to the analysis modules. Tentative tracks are tracked internally but not exposed — they could still be spurious.
+Confirmed tracks are returned to the analysis modules. Tentative tracks are tracked internally but not exposed  -  they could still be spurious.
 
 ### 11.2.5 Death: Removing Lost Tracks
 
@@ -222,7 +222,7 @@ The tracker operates within a 5 ms budget per frame. The key operations and thei
 | Remove stale tracks | ~1 μs |
 | **Total** | **~135 μs** |
 
-The tracker is well within its budget. The dominant cost is the IoU computation for candidate pairs — 5000 pairs × ~10 ns/IoU = 50 μs. This leaves room for adding appearance-based matching (CNN feature embedding + cosine distance) in the future.
+The tracker is well within its budget. The dominant cost is the IoU computation for candidate pairs  -  5000 pairs × ~10 ns/IoU = 50 μs. This leaves room for adding appearance-based matching (CNN feature embedding + cosine distance) in the future.
 
 ## 11.5 The IoU Metric Under the Hood
 
@@ -290,4 +290,4 @@ The intersection analyzer uses raw detections because it only needs the current 
 - The tracker operates well within its 5 ms budget (~135 μs typical).
 - Analysis modules receive tracks (with memory and identity) rather than raw detections.
 
-In Chapter 12, we cover the geometric computations that bridge pixels and real-world distances — the pinhole model, velocity estimation, and the Bird's Eye View projection.
+In Chapter 12, we cover the geometric computations that bridge pixels and real-world distances  -  the pinhole model, velocity estimation, and the Bird's Eye View projection.

@@ -1,6 +1,6 @@
 # Chapter 16: Verification, Testing & Performance
 
-> *"A test is not a test if it only passes. A test is a proof that the code is wrong — and the code is wrong until proven otherwise."*
+> *"A test is not a test if it only passes. A test is a proof that the code is wrong  -  and the code is wrong until proven otherwise."*
 
 The CivicSense coding standards define six formal verification properties that every PR must satisfy:
 
@@ -106,8 +106,8 @@ Example-based tests ("assert that 2 + 2 = 4") are necessary but not sufficient. 
 
 The `compute_iou` function should satisfy:
 
-- **Symmetry**: $IoU(A, B) = IoU(B, A)$
-- **Reflexivity**: $IoU(A, A) = 1.0$
+- **Symmetry**: \(IoU(A, B) = IoU(B, A)\)
+- **Reflexivity**: \(IoU(A, A) = 1.0\)
 - **Non-negativity**: \\( IoU(A, B) \geq 0.0 \\)
 - **Boundedness**: \\( IoU(A, B) \leq 1.0 \\)
 
@@ -283,4 +283,4 @@ The test suite runs in under 30 seconds on a development machine. The benchmarks
 - Integration tests verify that modules compose correctly.
 - The PR verification checklist formalizes the quality gate for every contribution.
 
-This is the last chapter of the book — not because verification is an afterthought, but because it is the final, essential step before the code meets the real road.
+This is the last chapter of the book  -  not because verification is an afterthought, but because it is the final, essential step before the code meets the real road.

@@ -2,7 +2,7 @@
 
 > *"Your development machine is a luxury resort. The edge device is a wilderness survival scenario."*
 
-Deploying a computer vision system to edge hardware — a Raspberry Pi 5, a Qualcomm Snapdragon AR1, or a Google Coral Dev Board — is a different engineering challenge from training on a cloud GPU. The constraints are tighter (power, memory, thermal), the toolchains are more fragile (cross-compilation), and debugging is harder (no GPU, limited logging).
+Deploying a computer vision system to edge hardware  -  a Raspberry Pi 5, a Qualcomm Snapdragon AR1, or a Google Coral Dev Board  -  is a different engineering challenge from training on a cloud GPU. The constraints are tighter (power, memory, thermal), the toolchains are more fragile (cross-compilation), and debugging is harder (no GPU, limited logging).
 
 This chapter covers the end-to-end deployment pipeline for CivicSense, from cross-compilation to runtime optimization.
 
@@ -173,9 +173,9 @@ For production deployment, CivicSense requires at least a heatsink. The dashcam 
 For higher performance, CivicSense supports the Hailo-8L Neural Processing Unit (NPU), a $25 add-on for the Pi 5.
 
 The Hailo-8L provides:
-- **13 TOPS (INT8)** compute — enough for YOLOv11n at 30+ FPS.
-- **~2.5 W power** — less than the CPU consumes for the same workload.
-- **Zero-copy inference** — tensors are fed directly from the camera sensor.
+- **13 TOPS (INT8)** compute  -  enough for YOLOv11n at 30+ FPS.
+- **~2.5 W power**  -  less than the CPU consumes for the same workload.
+- **Zero-copy inference**  -  tensors are fed directly from the camera sensor.
 
 To use the Hailo NPU, the ONNX model must be compiled to Hailo's internal format:
 

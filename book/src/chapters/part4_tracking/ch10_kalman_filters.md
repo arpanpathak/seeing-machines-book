@@ -1,6 +1,6 @@
 # Chapter 10: Kalman Filters & State Estimation
 
-> *"Prediction is very difficult, especially about the future."* — Niels Bohr
+> *"Prediction is very difficult, especially about the future."*  -  Niels Bohr
 
 The Kalman filter is the mathematical workhorse of multi-object tracking. It solves a deceptively simple problem: given a sequence of noisy measurements (bounding boxes from YOLO), estimate the true state of each object (position, velocity, dimensions) and predict where it will be in the next frame.
 
@@ -10,7 +10,7 @@ This chapter derives the Kalman filter from first principles, implements it in R
 
 Your YOLO detector produces bounding boxes. But each box has noise: the detector might jitter by a few pixels between frames, occasionally miss a detection, or momentarily swap two objects with similar positions.
 
-The Kalman filter addresses this by maintaining a **belief state** — a Gaussian probability distribution over the true state of each tracked object. At each frame, it:
+The Kalman filter addresses this by maintaining a **belief state**  -  a Gaussian probability distribution over the true state of each tracked object. At each frame, it:
 
 1. **Predicts** where the object should be now, based on where it was before and how it was moving.
 2. **Updates** that prediction with the new measurement (the YOLO detection), weighted by how much we trust each source of information.
@@ -27,7 +27,7 @@ We model each tracked object with an 8-dimensional state vector:
 
 where:
 - \\( (c_x, c_y) \\) is the bounding box center in pixels.
-- $(w, h)$ is the width and height in pixels.
+- \((w, h)\) is the width and height in pixels.
 - \\( (v_x, v_y, v_w, v_h) \\) are the velocities (rate of change per frame).
 
 The state evolves according to a linear **process model**:
@@ -82,7 +82,7 @@ The Kalman filter proceeds in two steps at each frame:
 
 \\[\mathbf{P}_{t|t-1} = \mathbf{F} \cdot \mathbf{P}_{t-1|t-1} \cdot \mathbf{F}^T + \mathbf{Q}\\]
 
-Where \\( \mathbf{P} \\) is the state covariance matrix — our uncertainty about the state. The predict step increases uncertainty (adds \\( \mathbf{Q} \\)).
+Where \\( \mathbf{P} \\) is the state covariance matrix  -  our uncertainty about the state. The predict step increases uncertainty (adds \\( \mathbf{Q} \\)).
 
 **Update step:**
 
@@ -92,7 +92,7 @@ Where \\( \mathbf{P} \\) is the state covariance matrix — our uncertainty abou
 
 \\[\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t \cdot \mathbf{H}) \cdot \mathbf{P}_{t|t-1}\\]
 
-Where \\( \mathbf{K}_t \\) is the **Kalman gain** — it determines how much we trust the measurement vs the prediction:
+Where \\( \mathbf{K}_t \\) is the **Kalman gain**  -  it determines how much we trust the measurement vs the prediction:
 - If measurement noise \\( \mathbf{R} \\) is large, \\( \mathbf{K}_t \\) is small, and we trust the prediction more.
 - If process noise \\( \mathbf{Q} \\) is large (our model is uncertain), \\( \mathbf{K}_t \\) is larger, and we trust the measurement more.
 
@@ -116,7 +116,7 @@ The CivicSense Kalman filter uses a **scalar-gain approximation**: instead of co
 
 \\[P_{i,i} \leftarrow (1 - K_i) \cdot P_{i,i}\\]
 
-This approximation assumes the state variables are uncorrelated (off-diagonal covariances are zero). In practice, bounding box center \\( (c_x, c_y) \\) and dimensions $(w, h)$ are approximately independent for typical traffic scenes, so the approximation is good.
+This approximation assumes the state variables are uncorrelated (off-diagonal covariances are zero). In practice, bounding box center \\( (c_x, c_y) \\) and dimensions \((w, h)\) are approximately independent for typical traffic scenes, so the approximation is good.
 
 ## 10.3 The Rust Implementation
 
@@ -132,7 +132,7 @@ struct KalmanFilter {
 }
 ```
 
-Note: we store the full \\( 8 \times 8 \\) matrix (64 elements) as a flat array for cache efficiency. The \\( n \times n \\) matrix stored row-major means element $(i,j)$ is at index \\( i \times n + j \\). The diagonal element \\( P_{i,i} \\) is at index \\( i \times 9 \\) (since \\( i \times 8 + i = i \times 9 \\)).
+Note: we store the full \\( 8 \times 8 \\) matrix (64 elements) as a flat array for cache efficiency. The \\( n \times n \\) matrix stored row-major means element \((i,j)\) is at index \\( i \times n + j \\). The diagonal element \\( P_{i,i} \\) is at index \\( i \times 9 \\) (since \\( i \times 8 + i = i \times 9 \\)).
 
 ### 10.3.2 Initialization
 
@@ -180,7 +180,7 @@ fn predict(&mut self) {
 
 The predict step:
 1. Adds velocity to position (constant-velocity model). Note: dt is implicitly 1 frame. A full implementation would multiply velocity by the actual time delta.
-2. Increases covariance by the process noise \\( \mathbf{Q} \\). This represents the uncertainty added by our simplified motion model — vehicles can accelerate, brake, or turn, and our constant-velocity model cannot capture that.
+2. Increases covariance by the process noise \\( \mathbf{Q} \\). This represents the uncertainty added by our simplified motion model  -  vehicles can accelerate, brake, or turn, and our constant-velocity model cannot capture that.
 
 ### 10.3.4 Update
 
@@ -227,10 +227,10 @@ Controls how much we trust the constant-velocity model. Higher values = more unc
 ### R_VAR: Measurement Noise (Default: 0.1)
 
 Controls how much we trust each YOLO detection. Higher values = noisier measurements = filter relies more on the motion model. Factors affecting R_VAR:
-- **High confidence detections (conf > 0.9)**: Lower R_VAR (0.05) — trust the measurement.
-- **Low confidence detections (conf < 0.5)**: Higher R_VAR (0.2) — the box is likely noisy.
-- **Small objects (far away)**: Higher R_VAR (0.15) — small boxes have more relative noise.
-- **Large objects (close)**: Lower R_VAR (0.08) — large boxes are more stable.
+- **High confidence detections (conf > 0.9)**: Lower R_VAR (0.05)  -  trust the measurement.
+- **Low confidence detections (conf < 0.5)**: Higher R_VAR (0.2)  -  the box is likely noisy.
+- **Small objects (far away)**: Higher R_VAR (0.15)  -  small boxes have more relative noise.
+- **Large objects (close)**: Lower R_VAR (0.08)  -  large boxes are more stable.
 
 The current implementation uses a single R_VAR for all detections. An adaptive version would scale R_VAR based on detection confidence and object size.
 
@@ -303,7 +303,7 @@ pub fn update(&mut self, detection: &Detection) {
 }
 ```
 
-The `predict()` is called for every track at the start of each frame (before association). The `update()` is called only for tracks that matched a detection. Tracks that did not match a detection do not update their Kalman state — they continue predicting with increasing uncertainty until they exceed `max_age` and are removed.
+The `predict()` is called for every track at the start of each frame (before association). The `update()` is called only for tracks that matched a detection. Tracks that did not match a detection do not update their Kalman state  -  they continue predicting with increasing uncertainty until they exceed `max_age` and are removed.
 
 ## 10.7 Exercises
 

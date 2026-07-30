@@ -1,4 +1,4 @@
-# Appendix A — CivicSense Full Source Reference
+# Appendix A  -  CivicSense Full Source Reference
 
 This appendix maps every chapter concept to its location in the CivicSense source tree.
 

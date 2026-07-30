@@ -16,11 +16,11 @@ For the CivicSense use case (a forward-facing dashcam with a known camera config
 
 ### 12.1.1 Distance from Known Width
 
-If we know the real-world width $W$ of an object (e.g., a vehicle is approximately 1.8 meters wide, a stop sign is 0.75 meters in diameter), then:
+If we know the real-world width \(W\) of an object (e.g., a vehicle is approximately 1.8 meters wide, a stop sign is 0.75 meters in diameter), then:
 
 \\[Z = \frac{f \cdot W}{w}\\]
 
-where $w$ is the pixel width of the object's bounding box.
+where \(w\) is the pixel width of the object's bounding box.
 
 This is implemented in `geometry.rs`:
 
@@ -33,7 +33,7 @@ pub fn estimate_distance(pixel_width: f32, real_width: f32, focal_length: f32) -
 }
 ```
 
-**What $f = 650$ means in physical terms.** The default focal length of 650 pixels for a 1280-pixel-wide image corresponds to a horizontal field of view of approximately:
+**What \(f = 650\) means in physical terms.** The default focal length of 650 pixels for a 1280-pixel-wide image corresponds to a horizontal field of view of approximately:
 
 \\[\text{FOV} = 2 \cdot \arctan\left(\frac{1280/2}{650}\right) \approx 89^\circ\\]
 
@@ -65,7 +65,7 @@ pub fn compute_relative_velocity(prev_distance: f32, curr_distance: f32, dt: f32
 }
 ```
 
-**Why this works:** If a vehicle was 20 m away at frame $t-1$ and is 19 m away at frame $t$ (with \\( \Delta t = 0.033 \\) s at 30 FPS):
+**Why this works:** If a vehicle was 20 m away at frame \(t-1\) and is 19 m away at frame \(t\) (with \\( \Delta t = 0.033 \\) s at 30 FPS):
 
 \\[V_{\text{rel}} = \frac{20 - 19}{0.033} \approx 30 \text{ m/s} \approx 67 \text{ mph}\\]
 
@@ -146,13 +146,13 @@ fn bbox_from_cxcywh(cx: f32, cy: f32, w: f32, h: f32) -> (f32, f32, f32, f32) {
 }
 ```
 
-This conversion is hidden inside the `KalmanFilter::bbox()` method — no other code needs to know the internal format.
+This conversion is hidden inside the `KalmanFilter::bbox()` method  -  no other code needs to know the internal format.
 
 ## 12.6 The Bird's Eye View Projection (BEP)
 
-The intersection analyzer uses a Bird's Eye View (BEV) occupancy grid. The BEV projection maps image coordinates $(u, v)$ to ground-plane coordinates $(X, Z)$ under the assumption that all objects lie on a flat ground plane.
+The intersection analyzer uses a Bird's Eye View (BEV) occupancy grid. The BEV projection maps image coordinates \((u, v)\) to ground-plane coordinates \((X, Z)\) under the assumption that all objects lie on a flat ground plane.
 
-Given the camera's height $h$ above the ground and its pitch angle \\( \theta \\) (downward tilt), the mapping is:
+Given the camera's height \(h\) above the ground and its pitch angle \\( \theta \\) (downward tilt), the mapping is:
 
 \\[Z = \frac{h}{\tan(\theta + \arctan(\frac{v - v_0}{f_y}))}\\]
 
@@ -160,7 +160,7 @@ Given the camera's height $h$ above the ground and its pitch angle \\( \theta \\
 
 where \\( (u_0, v_0) \\) is the principal point (image center) and \\( (f_x, f_y) \\) is the focal length.
 
-This is currently a placeholder in the code — the BEV grid resolution and ahead-distance are configured, but the actual projection requires camera extrinsic calibration (height and pitch angle). The TODO comment in `src/modules/intersection.rs` notes this as future work.
+This is currently a placeholder in the code  -  the BEV grid resolution and ahead-distance are configured, but the actual projection requires camera extrinsic calibration (height and pitch angle). The TODO comment in `src/modules/intersection.rs` notes this as future work.
 
 ## 12.7 The Capstone Connection: Geometry in the Modules
 
@@ -184,13 +184,13 @@ Each function is small, independently testable, and has documented mathematical 
 
 3. **Filter response analysis.** Feed a step function (0, 0, 0, 10, 10, 10, ...) through the low-pass filter with \\( \alpha = 0.3 \\). Plot the output. How many samples does it take to reach 90% of the step value?
 
-4. **Implement BEV projection.** Given camera height h = 1.2 m and pitch \\( \theta = 5^\circ \\), write a function that converts $(u, v)$ image coordinates to $(X, Z)$ ground-plane coordinates. Test with a grid of points.
+4. **Implement BEV projection.** Given camera height h = 1.2 m and pitch \\( \theta = 5^\circ \\), write a function that converts \((u, v)\) image coordinates to \((X, Z)\) ground-plane coordinates. Test with a grid of points.
 
 ## 12.9 Key Takeaways
 
 - The pinhole camera model converts pixel width to real-world distance, with known limitations (width assumptions, angle effects, calibration errors).
 - Relative velocity is estimated from the rate of change of distance, requiring both temporal filtering and measurement smoothing.
-- The low-pass filter (\\( \alpha = 0.3 \\)) provides moderate smoothing with ~0.1 s response time — fast enough for alerts, slow enough to eliminate jitter.
+- The low-pass filter (\\( \alpha = 0.3 \\)) provides moderate smoothing with ~0.1 s response time  -  fast enough for alerts, slow enough to eliminate jitter.
 - IoU is the fundamental geometric metric for both detection NMS and tracking association.
 - Bounding box format conversion (corner ↔ center-size) bridges the detector and Kalman filter representations.
 - BEV projection is planned but requires camera extrinsic calibration to be accurate.

@@ -6,17 +6,17 @@ The gap between training and deployment is a chasm filled with precision formats
 
 ## 6.1 Why ONNX? The Interoperability Standard
 
-Open Neural Network Exchange (ONNX) is an open format for representing machine learning models. It is the assembly language of deep learning — a low-level, hardware-agnostic representation of the computation graph.
+Open Neural Network Exchange (ONNX) is an open format for representing machine learning models. It is the assembly language of deep learning  -  a low-level, hardware-agnostic representation of the computation graph.
 
 The key properties that make ONNX the right choice for CivicSense:
 
-1. **No Python dependency** — ONNX models are loaded and run by the ONNX Runtime, a C++ library with Rust bindings (`ort`). The edge device does not need PyTorch, torchvision, or even Python itself.
+1. **No Python dependency**  -  ONNX models are loaded and run by the ONNX Runtime, a C++ library with Rust bindings (`ort`). The edge device does not need PyTorch, torchvision, or even Python itself.
 
-2. **Graph optimizations** — The ONNX Runtime applies dozens of graph-level optimizations: constant folding, operator fusion (combining Conv + BatchNorm + SiLU into a single kernel), and memory planning. These optimizations can reduce inference latency by 30-50% compared to PyTorch eager mode.
+2. **Graph optimizations**  -  The ONNX Runtime applies dozens of graph-level optimizations: constant folding, operator fusion (combining Conv + BatchNorm + SiLU into a single kernel), and memory planning. These optimizations can reduce inference latency by 30-50% compared to PyTorch eager mode.
 
-3. **Hardware acceleration** — ONNX Runtime supports execution providers for CUDA (NVIDIA GPUs), TensorRT (NVIDIA inference optimization), CoreML (Apple Neural Engine), OpenVINO (Intel), and the Hailo-8L NPU (used in CivicSense's dashcam hardware).
+3. **Hardware acceleration**  -  ONNX Runtime supports execution providers for CUDA (NVIDIA GPUs), TensorRT (NVIDIA inference optimization), CoreML (Apple Neural Engine), OpenVINO (Intel), and the Hailo-8L NPU (used in CivicSense's dashcam hardware).
 
-4. **INT8 quantization** — ONNX supports INT8 quantization, which reduces model size by 4x and increases inference speed by 2-3x with minimal accuracy loss.
+4. **INT8 quantization**  -  ONNX supports INT8 quantization, which reduces model size by 4x and increases inference speed by 2-3x with minimal accuracy loss.
 
 ## 6.2 Exporting YOLO to ONNX
 
@@ -49,9 +49,9 @@ model.export(
 
 An ONNX file is a protobuf binary containing:
 
-1. **Graph definition** — The computation graph (nodes, edges, tensor shapes).
-2. **Weight tensors** — All learned parameters (convolution weights, BN parameters, biases).
-3. **Input/output specifications** — Tensor names, shapes, data types.
+1. **Graph definition**  -  The computation graph (nodes, edges, tensor shapes).
+2. **Weight tensors**  -  All learned parameters (convolution weights, BN parameters, biases).
+3. **Input/output specifications**  -  Tensor names, shapes, data types.
 
 For the CivicSense YOLO model, the input is `images` (float32, \\( \text{batch} \times 3 \times 640 \times 640 \\)) and the output is a single tensor of shape \\( \text{batch} \times 11 \times 8400 \\) (11 channels: 4 box coords + 7 class logits, one per anchor).
 
@@ -100,17 +100,17 @@ A YOLOv11n model in FP32 is approximately 5.5 MB. In INT8, it is ~1.4 MB. The 4x
 
 ### 6.3.1 How Quantization Works
 
-Quantization maps a range of floating-point values \\( [r_{\min}, r_{\max}] \\) to integer values $[0, 255]$:
+Quantization maps a range of floating-point values \\( [r_{\min}, r_{\max}] \\) to integer values \([0, 255]\):
 
 \\[r = S \cdot (q - Z)\\]
 
 where:
-- $r$ is the real (float) value.
-- $q$ is the quantized (integer) value.
-- $S$ is the scale factor (a float).
-- $Z$ is the zero-point (an integer representing the quantized value of 0).
+- \(r\) is the real (float) value.
+- \(q\) is the quantized (integer) value.
+- \(S\) is the scale factor (a float).
+- \(Z\) is the zero-point (an integer representing the quantized value of 0).
 
-For **per-tensor quantization**, a single $(S, Z)$ pair is used for the entire tensor. For **per-channel quantization**, each output channel has its own $(S, Z)$ pair, which is more accurate but requires more storage.
+For **per-tensor quantization**, a single \((S, Z)\) pair is used for the entire tensor. For **per-channel quantization**, each output channel has its own \((S, Z)\) pair, which is more accurate but requires more storage.
 
 ### 6.3.2 Post-Training Quantization vs Quantization-Aware Training
 
@@ -226,11 +226,11 @@ This pipeline is automated in the Makefile:
 ```makefile
 ## Train YOLO model on cloud GPU (run this on the VM)
 train-run:
-    $(CARGO) run --release -- train run --data configs/dataset.yaml --epochs 100
+    \((CARGO) run --release -- train run --data configs/dataset.yaml --epochs 100
 
 ## Validate an exported ONNX model with ort
 train-validate:
-    $(CARGO) run --release -- train validate
+    \)(CARGO) run --release -- train validate
 ```
 
 The `train run` subcommand executes the Python training script (via shell), then the `train validate` subcommand loads the resulting ONNX file and verifies it with the Rust inference engine. This creates a tight feedback loop: train → export → verify → deploy.
@@ -253,4 +253,4 @@ The `train run` subcommand executes the Python training script (via shell), then
 - Per-channel quantization preserves more accuracy than per-tensor quantization, especially for convolutional layers.
 - Always validate the ONNX export by comparing FP32 and quantized model outputs on real data.
 
-In Part III, we shift from training to deployment — building the Rust inference engine that loads this ONNX model and runs it on edge hardware.
+In Part III, we shift from training to deployment  -  building the Rust inference engine that loads this ONNX model and runs it on edge hardware.

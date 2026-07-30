@@ -14,9 +14,9 @@ The pipeline treats all video sources uniformly through a `FrameIter` type alias
 pub type FrameIter = Box<dyn FnMut() -> Option<(Vec<u8>, u64)>>;
 ```
 
-This is a **closure-based iterator** — a callable that produces `(rgb_buffer, frame_index)` tuples until the source is exhausted. The `Box<dyn FnMut>` allows different implementations (camera, video file, directory) to return different closure types while conforming to the same interface.
+This is a **closure-based iterator**  -  a callable that produces `(rgb_buffer, frame_index)` tuples until the source is exhausted. The `Box<dyn FnMut>` allows different implementations (camera, video file, directory) to return different closure types while conforming to the same interface.
 
-**Why a closure instead of a trait?** A trait (`trait FrameSource { fn next(&mut self) -> Option<Frame> }`) would be more idiomatic Rust. But the closure approach is simpler for a pipeline that needs to pass the iterator through multiple functions without generic type parameters. The performance difference is negligible — a single vtable call per frame (~5 ns).
+**Why a closure instead of a trait?** A trait (`trait FrameSource { fn next(&mut self) -> Option<Frame> }`) would be more idiomatic Rust. But the closure approach is simpler for a pipeline that needs to pass the iterator through multiple functions without generic type parameters. The performance difference is negligible  -  a single vtable call per frame (~5 ns).
 
 ### 9.1.1 Source Classification
 
@@ -74,7 +74,7 @@ fn classify_source(source: &str) -> SourceKind {
         return SourceKind::V4l2Device(dev_path);
     }
 
-    SourceKind::Video // fallback — will error when opened
+    SourceKind::Video // fallback  -  will error when opened
 }
 ```
 
@@ -218,7 +218,7 @@ impl Pipeline {
 }
 ```
 
-The `run()` method is a simple loop: get a frame, process it, repeat. There is no frame dropping mechanism yet — every frame is processed. At 30 FPS, this is fine. If the pipeline falls behind (e.g., running at 25 FPS), we would need to add frame dropping: `if frame_arrival_time - last_process_time < 33ms { skip }`.
+The `run()` method is a simple loop: get a frame, process it, repeat. There is no frame dropping mechanism yet  -  every frame is processed. At 30 FPS, this is fine. If the pipeline falls behind (e.g., running at 25 FPS), we would need to add frame dropping: `if frame_arrival_time - last_process_time < 33ms { skip }`.
 
 ### 9.3.1 The Ego Speed Input
 
@@ -231,9 +231,9 @@ civicsense run --source test_video.mp4 --visualize --ego_speed 35.0
 ```
 
 In production, ego speed would come from:
-1. **GPS** — Via a USB GPS dongle (common in dashcams), providing speed at 1 Hz. The Rust pipeline reads `/dev/ttyUSB0` and parses NMEA sentences.
-2. **OBD-II** — The vehicle's CAN bus, providing wheel-speed data at 10+ Hz via a Bluetooth OBD-II adapter.
-3. **Visual odometry** — Camera-only speed estimation using the change in detected vehicle sizes over time (this is what the `compute_relative_velocity` function in `geometry.rs` does for other vehicles).
+1. **GPS**  -  Via a USB GPS dongle (common in dashcams), providing speed at 1 Hz. The Rust pipeline reads `/dev/ttyUSB0` and parses NMEA sentences.
+2. **OBD-II**  -  The vehicle's CAN bus, providing wheel-speed data at 10+ Hz via a Bluetooth OBD-II adapter.
+3. **Visual odometry**  -  Camera-only speed estimation using the change in detected vehicle sizes over time (this is what the `compute_relative_velocity` function in `geometry.rs` does for other vehicles).
 
 The ego speed is used to determine if the driver is approaching a stop sign too fast, if they are crawling in the left lane, or if the intersection ahead is getting dangerously close.
 
@@ -252,9 +252,9 @@ Total:       < 40 ms  (target: 25 fps minimum)
 
 Any PR that exceeds this budget without profiling data is rejected. The budget is enforced through:
 
-1. **Continuous benchmarking** — `cargo bench` measures each stage's latency on every commit.
-2. **Regression detection** — A CI check compares benchmark results against the previous commit.
-3. **Documentation** — Each hot-path function documents its expected latency.
+1. **Continuous benchmarking**  -  `cargo bench` measures each stage's latency on every commit.
+2. **Regression detection**  -  A CI check compares benchmark results against the previous commit.
+3. **Documentation**  -  Each hot-path function documents its expected latency.
 
 ### 9.4.1 The Unwritten Rule: No Allocations on the Hot Path
 
@@ -262,7 +262,7 @@ The most common performance regression is an accidental allocation in the hot pa
 
 > No `to_vec()`, `clone()`, `format!()` in the inference loop.
 
-The current codebase violates this in one place — `visualize` mode creates a new frame buffer each frame (`let mut viz = frame_buffer.to_vec();`). This is acceptable because visualization is disabled in production (it is a debug feature). But it is noted in the code as a known violation.
+The current codebase violates this in one place  -  `visualize` mode creates a new frame buffer each frame (`let mut viz = frame_buffer.to_vec();`). This is acceptable because visualization is disabled in production (it is a debug feature). But it is noted in the code as a known violation.
 
 ## 9.5 The Capstone Connection: Running the Pipeline
 
@@ -326,4 +326,4 @@ These numbers meet the performance targets defined in the project README.
 - Hot-path allocation is forbidden. Current violations are isolated to debug-only features.
 - Release builds use LTO and single codegen unit for maximum single-threaded performance.
 
-In Part IV, we dive into tracking — the Kalman filter, Deep SORT, and the geometric computations that give the system temporal awareness across frames.
+In Part IV, we dive into tracking  -  the Kalman filter, Deep SORT, and the geometric computations that give the system temporal awareness across frames.

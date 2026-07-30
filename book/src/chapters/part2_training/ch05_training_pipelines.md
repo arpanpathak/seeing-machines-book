@@ -10,7 +10,7 @@ This is the chapter where we stop theorizing and start training. We are going to
 - Validation with mAP computation.
 - Checkpointing and experiment tracking.
 
-Every function is type-annotated. Every data structure is validated with Pydantic. This is not optional — untyped training code is the #1 cause of silent bugs that waste GPU-hours.
+Every function is type-annotated. Every data structure is validated with Pydantic. This is not optional  -  untyped training code is the #1 cause of silent bugs that waste GPU-hours.
 
 ## 5.1 The Dataset: Structure and Validation
 
@@ -20,7 +20,7 @@ CivicSense uses the YOLO dataset format: each image has a corresponding `.txt` f
 <class_id> <cx_norm> <cy_norm> <w_norm> <h_norm>
 ```
 
-Where coordinates are normalized to $[0, 1]$ relative to image dimensions.
+Where coordinates are normalized to \([0, 1]\) relative to image dimensions.
 
 ### 5.1.1 Dataset Validation with Pydantic
 
@@ -112,7 +112,7 @@ def split_dataset(
         seed: Seed for the hash function.
     
     Returns:
-        (train_images, val_images) — lists of image paths.
+        (train_images, val_images)  -  lists of image paths.
     """
     images_dir: Path = data_root / "images"
     labels_dir: Path = data_root / "labels"
@@ -391,7 +391,7 @@ def train_model(
     return exported_path
 ```
 
-**Why AdamW?** AdamW decouples weight decay from the adaptive gradient updates, which prevents overfitting more effectively than L2 regularization in Adam. The default momentum (0.937) is high — it smooths gradient updates across ~10 batches, which helps convergence on noisy real-world data.
+**Why AdamW?** AdamW decouples weight decay from the adaptive gradient updates, which prevents overfitting more effectively than L2 regularization in Adam. The default momentum (0.937) is high  -  it smooths gradient updates across ~10 batches, which helps convergence on noisy real-world data.
 
 ## 5.4 Validation: Mean Average Precision
 
@@ -411,7 +411,7 @@ bus            500        198    0.879    0.833    0.885    0.701
 intersection_zone 500     198    0.846    0.788    0.829    0.623
 ```
 
-The per-class mAP reveals which classes the model struggles with. `intersection_zone` consistently has the lowest mAP because it is a semantic region rather than a physical object — its appearance varies significantly across different intersection geometries.
+The per-class mAP reveals which classes the model struggles with. `intersection_zone` consistently has the lowest mAP because it is a semantic region rather than a physical object  -  its appearance varies significantly across different intersection geometries.
 
 ## 5.5 The Capstone Connection: Training the CivicSense Model
 
@@ -440,7 +440,7 @@ This struct bridges the Python training world (where the data is labeled and spl
 
 ## 5.6 Exercises
 
-1. **Implement a data loader** in typed Python that reads YOLO-format annotations, applies random affine augmentations (scale, translate, rotate), and yields batched tensors. Profile the throughput — ensure it can keep a GPU saturated.
+1. **Implement a data loader** in typed Python that reads YOLO-format annotations, applies random affine augmentations (scale, translate, rotate), and yields batched tensors. Profile the throughput  -  ensure it can keep a GPU saturated.
 
 2. **Train a model on a subset.** Take 500 images from the CivicSense dataset, split them 80/20, and train a YOLOv11n model for 50 epochs. Validate and report mAP@0.5.
 
@@ -455,6 +455,6 @@ This struct bridges the Python training world (where the data is labeled and spl
 - Mosaic augmentation dramatically improves small-object detection by composing four training images.
 - Cosine annealing with warmup provides smooth, effective learning rate scheduling.
 - AdamW with high momentum (0.937) offers fast convergence with built-in regularization.
-- Per-class mAP reveals model blind spots — always validate at the class level, not just overall mAP.
+- Per-class mAP reveals model blind spots  -  always validate at the class level, not just overall mAP.
 
-In Chapter 6, we take the trained model through quantization, ONNX export, and validation — the bridge between Python training and Rust inference.
+In Chapter 6, we take the trained model through quantization, ONNX export, and validation  -  the bridge between Python training and Rust inference.

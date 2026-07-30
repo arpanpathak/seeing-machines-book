@@ -37,7 +37,7 @@ Each variant carries the data needed to:
 - Drive the voice output system ("Stop sign in 30 feet, you're going 25 mph").
 - Escalate to the mesh network if the violation is severe.
 
-Why an enum and not two separate structs? The enum allows the alert priority engine to handle all intersection alerts uniformly, while the variants provide specific data. The `match` expression on the alert type is exhaustive — the compiler ensures every variant is handled.
+Why an enum and not two separate structs? The enum allows the alert priority engine to handle all intersection alerts uniformly, while the variants provide specific data. The `match` expression on the alert type is exhaustive  -  the compiler ensures every variant is handled.
 
 ## 13.2 The IntersectionAnalyzer Structure
 
@@ -51,7 +51,7 @@ pub struct IntersectionAnalyzer {
 }
 ```
 
-The analyzer is stateless between frames — each call to `analyze()` is independent. This is by design: intersection conditions change rapidly (within a second, an intersection can go from clear to blocked), so temporal filtering would add latency to safety-critical alerts.
+The analyzer is stateless between frames  -  each call to `analyze()` is independent. This is by design: intersection conditions change rapidly (within a second, an intersection can go from clear to blocked), so temporal filtering would add latency to safety-critical alerts.
 
 ### 13.2.1 Configuration Parameters
 
@@ -290,7 +290,7 @@ This property-based testing approach (test with explicit conditions, verify the 
 - Stop sign alerts require both a proximal sign (≤ 50 m) and sufficient speed (≥ 10 mph).
 - Blocked intersection alerts use an occupancy heuristic (vehicle bounding box area > 30% of frame).
 - Alerts are logged with structured context for debugging and voice output generation.
-- The module is stateless between frames — no temporal filtering (by design, to minimize alert latency).
+- The module is stateless between frames  -  no temporal filtering (by design, to minimize alert latency).
 - The occupancy heuristic has known limitations (distance bias, perspective distortion) that a BEV projection would address.
 
-In Chapter 14, we cover the lane courtesy module — the socially-aware component that reminds drivers to keep right except to pass.
+In Chapter 14, we cover the lane courtesy module  -  the socially-aware component that reminds drivers to keep right except to pass.
