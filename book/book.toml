@@ -1,0 +1,15 @@
+[book]
+title = "Seeing Machines: Deep Learning & Computer Vision from Python to Bare Metal"
+authors = ["Arpan Pathak"]
+language = "en"
+description = "Building Production-Grade Vision Systems with Typed Python and Idiomatic Rust. A comprehensive, no-fluff guide to building real-world computer vision systems. Train models with typed Python, deploy with high-performance Rust on edge devices — all wrapped around the CivicSense capstone project."
+
+[output.html]
+smart-punctuation = true
+no-section-label = true
+git-repository-url = "https://github.com/arpanpathak/driving-civicsense-vision-model"
+edit-url-template = "https://github.com/arpanpathak/driving-civicsense-vision-model/edit/main/book/{path}"
+
+[output.html.print]
+page-height = "279mm"
+page-width = "216mm"
